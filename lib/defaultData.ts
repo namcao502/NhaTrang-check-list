@@ -1,0 +1,117 @@
+import type { Category } from "./types";
+
+export const DEFAULT_CATEGORIES: Category[] = [
+  {
+    icon: "🏊",
+    id: "boi-lan",
+    name: "Đồ Bơi & Lặn",
+    items: [
+      { id: "boi-lan-1", label: "Đồ bơi", note: "Mang 2 bộ – dự phòng rách hoặc ướt lâu khô", tag: "must", checked: false },
+      { id: "boi-lan-2", label: "Kính bơi", note: "Chống tia UV, chống trầy xước", tag: "must", checked: false },
+      { id: "boi-lan-3", label: "Ống thở & mặt nạ lặn", note: "Để ngắm cá dưới biển", tag: "opt", checked: false },
+      { id: "boi-lan-4", label: "Chân vịt lặn (fins)", note: "Nếu có – giúp bơi dễ hơn nhiều", tag: "opt", checked: false },
+      { id: "boi-lan-5", label: "Áo phao / phao bơi", note: "Cho trẻ em hoặc người không biết bơi", tag: "opt", checked: false },
+    ],
+  },
+  {
+    icon: "👗",
+    id: "trang-phuc",
+    name: "Trang Phục",
+    items: [
+      { id: "trang-phuc-1", label: "Quần áo thường (3–4 bộ)", note: "Thoáng mát, chất liệu mau khô", tag: "must", checked: false },
+      { id: "trang-phuc-2", label: "Quần áo thay sau tắm biển", note: "Ít nhất 1–2 bộ riêng", tag: "must", checked: false },
+      { id: "trang-phuc-3", label: "Quần short / váy nhẹ", note: "Phù hợp đi Vinwonder & Safari", tag: "must", checked: false },
+      { id: "trang-phuc-4", label: "Áo khoác nhẹ / áo gió", note: "Ban đêm có thể mát, phòng điều hòa lạnh", tag: "opt", checked: false },
+      { id: "trang-phuc-5", label: "Đồ lót đủ dùng", note: "", tag: "must", checked: false },
+    ],
+  },
+  {
+    icon: "👟",
+    id: "giay-dep",
+    name: "Giày Dép",
+    items: [
+      { id: "giay-dep-1", label: "Dép / giày siêu êm thoải mái", note: "Đi cả ngày tại Safari & Vinwonder – chọn loại bền chân", tag: "must", checked: false },
+      { id: "giay-dep-2", label: "Dép xỏ ngón đi biển", note: "Chống trơn trượt trên cát và đá", tag: "must", checked: false },
+      { id: "giay-dep-3", label: "Giày thể thao (nếu đi nhiều)", note: "Bảo vệ bàn chân tốt hơn khi đi bộ dài", tag: "opt", checked: false },
+    ],
+  },
+  {
+    icon: "🧴",
+    id: "ve-sinh",
+    name: "Vệ Sinh Cá Nhân",
+    items: [
+      { id: "ve-sinh-1", label: "Bàn chải đánh răng + kem đánh răng", note: "", tag: "must", checked: false },
+      { id: "ve-sinh-2", label: "Xà bông / sữa tắm", note: "", tag: "must", checked: false },
+      { id: "ve-sinh-3", label: "Dầu gội đầu", note: "", tag: "must", checked: false },
+      { id: "ve-sinh-4", label: "Kem dưỡng da / lotion", note: "Da dễ khô sau khi tắm biển", tag: "must", checked: false },
+      { id: "ve-sinh-5", label: "Máy cạo râu / dao cạo", note: "", tag: "opt", checked: false },
+      { id: "ve-sinh-6", label: "Tăm bông", note: "", tag: "opt", checked: false },
+    ],
+  },
+  {
+    icon: "☀️",
+    id: "chong-nang",
+    name: "Chống Nắng & Biển",
+    items: [
+      { id: "chong-nang-1", label: "Kem chống nắng SPF 50+", note: "Thoa lại mỗi 2 tiếng – đặc biệt quan trọng!", tag: "must", checked: false },
+      { id: "chong-nang-2", label: "Son dưỡng môi có SPF", note: "Môi rất dễ bị cháy nắng", tag: "must", checked: false },
+      { id: "chong-nang-3", label: "Kính mát chống UV", note: "", tag: "must", checked: false },
+      { id: "chong-nang-4", label: "Mũ / nón rộng vành", note: "Che nắng hiệu quả nhất", tag: "must", checked: false },
+      { id: "chong-nang-5", label: "Khăn tắm (2 chiếc)", note: "1 cho biển, 1 dự phòng", tag: "must", checked: false },
+      { id: "chong-nang-6", label: "Túi đựng đồ ướt / túi zip", note: "Đựng đồ bơi ướt sau khi dùng", tag: "must", checked: false },
+    ],
+  },
+  {
+    icon: "💊",
+    id: "thuoc",
+    name: "Thuốc & Sức Khoẻ",
+    items: [
+      { id: "thuoc-1", label: "Thuốc say sóng / say xe", note: "Nếu đi tàu ra đảo hoặc xe đường dài", tag: "must", checked: false },
+      { id: "thuoc-2", label: "Thuốc hạ sốt & giảm đau", note: "Paracetamol / Ibuprofen", tag: "must", checked: false },
+      { id: "thuoc-3", label: "Thuốc tiêu hóa / tiêu chảy", note: "Ăn hải sản dễ đau bụng bất ngờ", tag: "must", checked: false },
+      { id: "thuoc-4", label: "Thuốc dị ứng / chống côn trùng", note: "Đặc biệt quan trọng ở Safari", tag: "must", checked: false },
+      { id: "thuoc-5", label: "Băng cá nhân & thuốc đỏ", note: "", tag: "opt", checked: false },
+      { id: "thuoc-6", label: "Dầu gió xanh / dầu tràm", note: "Tiện dụng cho nhiều tình huống", tag: "opt", checked: false },
+      { id: "thuoc-7", label: "Thuốc dự phòng cá nhân", note: "Bệnh nền / thuốc đang dùng thường ngày", tag: "must", checked: false },
+    ],
+  },
+  {
+    icon: "📱",
+    id: "dien-tu",
+    name: "Điện Tử & Tiện Ích",
+    items: [
+      { id: "dien-tu-1", label: "Điện thoại + sạc", note: "", tag: "must", checked: false },
+      { id: "dien-tu-2", label: "Pin dự phòng (power bank)", note: "Đi cả ngày ngoài trời cần nhiều pin", tag: "must", checked: false },
+      { id: "dien-tu-3", label: "Tai nghe", note: "", tag: "opt", checked: false },
+      { id: "dien-tu-4", label: "Máy ảnh / GoPro (nếu có)", note: "Chụp ảnh dưới nước rất đẹp", tag: "opt", checked: false },
+      { id: "dien-tu-5", label: "Túi / ốp điện thoại chống nước", note: "Đừng để điện thoại dính nước biển", tag: "must", checked: false },
+      { id: "dien-tu-6", label: "Adapter / phích cắm (nếu cần)", note: "", tag: "opt", checked: false },
+    ],
+  },
+  {
+    icon: "💳",
+    id: "giay-to",
+    name: "Giấy Tờ & Tài Chính",
+    items: [
+      { id: "giay-to-1", label: "CMND / CCCD", note: "Bắt buộc check-in khách sạn", tag: "must", checked: false },
+      { id: "giay-to-2", label: "Tiền mặt đủ dùng", note: "Nhiều chỗ ở biển không nhận thẻ", tag: "must", checked: false },
+      { id: "giay-to-3", label: "Thẻ ngân hàng / Visa", note: "", tag: "must", checked: false },
+      { id: "giay-to-4", label: "Vé / voucher Vinwonder & Safari", note: "Lưu sẵn offline hoặc in ra", tag: "must", checked: false },
+      { id: "giay-to-5", label: "Đặt phòng khách sạn (xác nhận)", note: "", tag: "must", checked: false },
+      { id: "giay-to-6", label: "Số điện thoại khẩn cấp ghi chú", note: "", tag: "opt", checked: false },
+    ],
+  },
+  {
+    icon: "🎒",
+    id: "do-lat-vat",
+    name: "Đồ Lặt Vặt Tiện Ích",
+    items: [
+      { id: "do-lat-vat-1", label: "Ba lô / túi xách nhỏ đi ngày", note: "Để đồ khi đi Vinwonder & Safari", tag: "must", checked: false },
+      { id: "do-lat-vat-2", label: "Nước uống đủ (bình reusable)", note: "Tránh say nắng, mất nước", tag: "must", checked: false },
+      { id: "do-lat-vat-3", label: "Snack / đồ ăn nhẹ", note: "Đồ ăn trong khu vui chơi thường đắt", tag: "opt", checked: false },
+      { id: "do-lat-vat-4", label: "Khăn giấy ướt", note: "Tiện lợi khi đi ngoài trời", tag: "must", checked: false },
+      { id: "do-lat-vat-5", label: "Kẹo / gum (chống buồn nôn)", note: "", tag: "opt", checked: false },
+      { id: "do-lat-vat-6", label: "Sách / earphone cho trẻ em", note: "Giải trí khi di chuyển", tag: "opt", checked: false },
+    ],
+  },
+];
