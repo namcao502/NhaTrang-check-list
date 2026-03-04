@@ -9,6 +9,7 @@ import FilterBar from "@/components/FilterBar";
 import CountdownBanner from "@/components/CountdownBanner";
 import ExportButton from "@/components/ExportButton";
 import UndoButton from "@/components/UndoButton";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
   const {
@@ -20,6 +21,7 @@ export default function Home() {
     addItem,
     removeItem,
     addCategory,
+    removeCategory,
     renameItem,
     updateNote,
     renameCategory,
@@ -56,7 +58,7 @@ export default function Home() {
 
   if (!loaded) {
     return (
-      <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400">
+      <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400 dark:text-gray-500">
         Đang tải...
       </main>
     );
@@ -94,19 +96,22 @@ export default function Home() {
       />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-8 pt-6 pb-20 sm:pb-10">
-        <header className="text-center mb-8">
-          <div className="inline-block bg-coral-100 text-coral-600 text-sm font-medium px-4 py-1.5 rounded-full mb-3">
+        <header className="text-center mb-8 relative">
+          <div className="absolute top-0 right-0">
+            <ThemeToggle />
+          </div>
+          <div className="inline-block bg-coral-100 text-coral-600 dark:bg-coral-600/20 dark:text-coral-500 text-sm font-medium px-4 py-1.5 rounded-full mb-3">
             ✈️ Kế hoạch chuyến đi
           </div>
-          <h1 className="text-4xl font-bold font-playfair text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold font-playfair text-gray-900 dark:text-gray-100 mb-2">
             Nha Trang Packing List
           </h1>
-          <p className="text-gray-600 text-sm">🏖️ Biển · 🎢 Vinwonders · 🦁 Safari</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">🏖️ Biển · 🎢 Vinwonders · 🦁 Safari</p>
           <CountdownBanner />
         </header>
 
         {allDone && (
-          <div className="mb-4 text-center bg-green-50 border border-green-200 rounded-2xl px-5 py-4 text-green-700 font-medium">
+          <div className="mb-4 text-center bg-green-50 border border-green-200 dark:bg-green-900/30 dark:border-green-800 rounded-2xl px-5 py-4 text-green-700 dark:text-green-300 font-medium">
             🎉 Đã chuẩn bị xong! Chúc cả gia đình có chuyến đi tuyệt vời! 🌊
           </div>
         )}
@@ -141,6 +146,7 @@ export default function Home() {
                 onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
                 onAddItem={(label, tag, note) => addItem(cat.id, label, tag, note)}
                 onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
+                onRemoveCategory={() => removeCategory(cat.id)}
                 onRenameCategory={(newName) => renameCategory(cat.id, newName)}
                 onBulkToggle={() => bulkToggleCategory(cat.id)}
                 onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}

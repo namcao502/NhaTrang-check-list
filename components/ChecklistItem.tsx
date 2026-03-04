@@ -72,7 +72,7 @@ export default function ChecklistItem({
   return (
     <li
       className={`flex items-start gap-3 py-3 px-3 rounded-lg group transition-colors ${
-        checked ? "bg-blue-50" : "hover:bg-ocean-50"
+        checked ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-ocean-50 dark:hover:bg-ocean-900/20"
       }`}
     >
       <input
@@ -87,7 +87,7 @@ export default function ChecklistItem({
         {editingLabel ? (
           <input
             autoFocus
-            className="w-full text-sm border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400"
+            className="w-full text-sm border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
             value={labelDraft}
             onChange={(e) => setLabelDraft(e.target.value)}
             onKeyDown={(e) => {
@@ -103,7 +103,7 @@ export default function ChecklistItem({
         ) : (
           <span
             className={`text-base cursor-text select-none ${
-              checked ? "line-through text-gray-400" : "text-gray-700"
+              checked ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-700 dark:text-gray-200"
             }`}
             onClick={() => {
               setLabelDraft(label);
@@ -119,7 +119,7 @@ export default function ChecklistItem({
           <input
             autoFocus
             placeholder="Ghi chú..."
-            className="mt-0.5 w-full text-xs border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400"
+            className="mt-0.5 w-full text-xs border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
             value={noteDraft}
             onChange={(e) => setNoteDraft(e.target.value)}
             onKeyDown={(e) => {
@@ -134,7 +134,7 @@ export default function ChecklistItem({
           />
         ) : note ? (
           <span
-            className="block text-sm text-gray-400 mt-0.5 cursor-text"
+            className="block text-sm text-gray-400 dark:text-gray-500 mt-0.5 cursor-text"
             onClick={() => {
               setNoteDraft(note);
               setEditingNote(true);
@@ -149,7 +149,7 @@ export default function ChecklistItem({
               setNoteDraft("");
               setEditingNote(true);
             }}
-            className="block text-sm text-gray-300 hover:text-ocean-400 transition-colors mt-0.5 px-1 leading-none"
+            className="block text-sm text-gray-300 hover:text-ocean-400 dark:text-gray-600 dark:hover:text-ocean-400 transition-colors mt-0.5 px-1 leading-none"
           >
             +
           </button>
@@ -157,19 +157,19 @@ export default function ChecklistItem({
       </div>
 
       {tag === "must" && (
-        <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 font-medium whitespace-nowrap flex-shrink-0">
+        <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/20 dark:text-coral-500 font-medium whitespace-nowrap flex-shrink-0">
           Quan trọng
         </span>
       )}
       {tag === "opt" && (
-        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium whitespace-nowrap flex-shrink-0">
+        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 font-medium whitespace-nowrap flex-shrink-0">
           Nên có
         </span>
       )}
       <button
         onClick={onRemove}
         aria-label={`Xoá ${label}`}
-        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 text-xl p-1 leading-none flex-shrink-0"
+        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-xl p-1 leading-none flex-shrink-0"
       >
         ×
       </button>

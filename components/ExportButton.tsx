@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Category } from "@/lib/types";
 
 interface Props {
@@ -24,7 +24,14 @@ export default function ExportButton({ categories }: Props) {
   const [copied, setCopied] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [fallbackText, setFallbackText] = useState("");
+  const [canShare, setCanShare] = useState(false);
+  const [shared, setShared] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Detect Web Share API support after mount (SSR-safe)
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
 
   async function handleExport() {
     const text = buildExportText(categories);
@@ -42,22 +49,45 @@ export default function ExportButton({ categories }: Props) {
     }
   }
 
+  async function handleShare() {
+    const text = buildExportText(categories);
+    try {
+      await navigator.share({ title: "Nha Trang Packing List", text });
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      // User cancelled or share failed — fall back to clipboard
+      handleExport();
+    }
+  }
+
   return (
     <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={handleExport}
-        className="glass-card rounded-full shadow border border-white/40 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 transition-colors"
-      >
-        {copied ? "✓ Đã sao chép!" : "📋 Sao chép danh sách"}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={handleExport}
+          className="flex-1 glass-card rounded-full shadow border border-white/40 dark:border-white/10 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:bg-ocean-900/30 transition-colors"
+        >
+          {copied ? "✓ Đã sao chép!" : "📋 Sao chép danh sách"}
+        </button>
+        {canShare && (
+          <button
+            type="button"
+            onClick={handleShare}
+            className="glass-card rounded-full shadow border border-white/40 dark:border-white/10 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:bg-ocean-900/30 transition-colors"
+          >
+            {shared ? "✓ Đã chia sẻ!" : "📤 Chia sẻ"}
+          </button>
+        )}
+      </div>
       {showFallback && (
         <textarea
           ref={textareaRef}
           readOnly
           value={fallbackText}
           rows={8}
-          className="w-full rounded-xl border border-gray-200 bg-white/80 px-3 py-2 text-xs text-gray-700 font-mono focus:outline-none focus:ring-2 focus:ring-ocean-300 resize-none"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-slate-700/80 px-3 py-2 text-xs text-gray-700 dark:text-gray-300 font-mono focus:outline-none focus:ring-2 focus:ring-ocean-300 resize-none"
         />
       )}
     </div>

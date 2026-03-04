@@ -142,6 +142,11 @@ export function useChecklist() {
     );
   }
 
+  function removeCategory(categoryId: string) {
+    pushUndo();
+    setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
+  }
+
   function bulkToggleCategory(categoryId: string) {
     pushUndo();
     setCategories((prev) =>
@@ -200,6 +205,7 @@ export function useChecklist() {
     addItem,
     removeItem,
     addCategory,
+    removeCategory,
     renameItem,
     updateNote,
     renameCategory,

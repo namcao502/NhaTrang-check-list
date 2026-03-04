@@ -22,7 +22,7 @@ export default function AddCategoryForm({ onAdd }: Props) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-base text-gray-400 hover:border-ocean-400 hover:text-ocean-600 transition-colors"
+        className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-2xl text-base text-gray-400 dark:text-gray-500 hover:border-ocean-400 hover:text-ocean-600 dark:hover:border-ocean-500 dark:hover:text-ocean-400 transition-colors"
       >
         + Thêm danh mục
       </button>
@@ -32,7 +32,7 @@ export default function AddCategoryForm({ onAdd }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex gap-2 p-4 bg-white rounded-2xl border border-ocean-200 shadow-sm"
+      className="flex gap-2 p-4 bg-white dark:bg-slate-800 rounded-2xl border border-ocean-200 dark:border-ocean-700 shadow-sm"
     >
       <input
         autoFocus
@@ -40,7 +40,7 @@ export default function AddCategoryForm({ onAdd }: Props) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Tên danh mục..."
-        className="flex-1 text-base border border-gray-200 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-ocean-400"
+        className="flex-1 text-base border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-ocean-400"
       />
       <button
         type="submit"
@@ -52,7 +52,7 @@ export default function AddCategoryForm({ onAdd }: Props) {
       <button
         type="button"
         onClick={() => setOpen(false)}
-        className="text-base px-3 py-3 text-gray-500 hover:text-gray-700"
+        className="text-base px-3 py-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
       >
         Hủy
       </button>

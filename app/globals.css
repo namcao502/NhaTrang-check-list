@@ -9,8 +9,16 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+:root.dark body {
+  background: linear-gradient(160deg, #0a1628 0%, #0d1f3c 30%, #001d3d 100%);
+}
+
 .glass-card {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+:root.dark .glass-card {
+  background: rgba(30, 41, 59, 0.85);
 }
