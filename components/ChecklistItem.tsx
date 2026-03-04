@@ -30,6 +30,10 @@ export default function ChecklistItem({
   const [editingNote, setEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState(note ?? "");
 
+  // Ref flags to prevent onBlur from committing after Escape
+  const cancelledLabelRef = useRef(false);
+  const cancelledNoteRef = useRef(false);
+
   // Keep drafts in sync if props change externally
   const prevLabel = useRef(label);
   if (prevLabel.current !== label) {
@@ -43,6 +47,10 @@ export default function ChecklistItem({
   }
 
   function commitLabel() {
+    if (cancelledLabelRef.current) {
+      cancelledLabelRef.current = false;
+      return;
+    }
     const trimmed = labelDraft.trim();
     if (!trimmed) {
       setLabelDraft(label);
@@ -53,7 +61,11 @@ export default function ChecklistItem({
   }
 
   function commitNote() {
-    onNoteChange(noteDraft);
+    if (cancelledNoteRef.current) {
+      cancelledNoteRef.current = false;
+      return;
+    }
+    onNoteChange(noteDraft.trim());
     setEditingNote(false);
   }
 
@@ -81,6 +93,7 @@ export default function ChecklistItem({
             onKeyDown={(e) => {
               if (e.key === "Enter") e.currentTarget.blur();
               if (e.key === "Escape") {
+                cancelledLabelRef.current = true;
                 setLabelDraft(label);
                 setEditingLabel(false);
               }
@@ -112,6 +125,7 @@ export default function ChecklistItem({
             onKeyDown={(e) => {
               if (e.key === "Enter") e.currentTarget.blur();
               if (e.key === "Escape") {
+                cancelledNoteRef.current = true;
                 setNoteDraft(note ?? "");
                 setEditingNote(false);
               }

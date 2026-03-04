@@ -30,6 +30,9 @@ export default function CategorySection({
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(category.name);
 
+  // Ref flag to prevent onBlur from committing after Escape
+  const cancelledNameRef = useRef(false);
+
   const prevName = useRef(category.name);
   if (prevName.current !== category.name) {
     prevName.current = category.name;
@@ -41,6 +44,10 @@ export default function CategorySection({
   const allDone = total > 0 && checked === total;
 
   function commitName() {
+    if (cancelledNameRef.current) {
+      cancelledNameRef.current = false;
+      return;
+    }
     const trimmed = nameDraft.trim();
     if (!trimmed) {
       setNameDraft(category.name);
@@ -52,13 +59,13 @@ export default function CategorySection({
 
   return (
     <section className="glass-card rounded-2xl shadow-lg border border-white/40 overflow-hidden">
-      {/* Header — the outer div handles collapse */}
-      <div
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/40 transition-colors cursor-pointer"
-        onClick={() => setCollapsed((v) => !v)}
-      >
-        {/* Left side: icon + name + done badge */}
-        <div className="flex items-center gap-3 min-w-0">
+      {/* Header — collapse is triggered only by the right-side chevron area */}
+      <div className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/40 transition-colors">
+        {/* Left side: icon + name — stopPropagation so clicks here never collapse */}
+        <div
+          className="flex items-center gap-3 min-w-0"
+          onClick={(e) => e.stopPropagation()}
+        >
           {category.icon && (
             <span className="text-xl flex-shrink-0">{category.icon}</span>
           )}
@@ -69,10 +76,10 @@ export default function CategorySection({
               className="text-lg font-semibold border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400"
               value={nameDraft}
               onChange={(e) => setNameDraft(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Enter") e.currentTarget.blur();
                 if (e.key === "Escape") {
+                  cancelledNameRef.current = true;
                   setNameDraft(category.name);
                   setEditingName(false);
                 }
@@ -84,8 +91,7 @@ export default function CategorySection({
               className={`text-lg font-semibold cursor-text ${
                 allDone ? "text-green-600" : "text-gray-800"
               }`}
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 setNameDraft(category.name);
                 setEditingName(true);
               }}
@@ -101,8 +107,11 @@ export default function CategorySection({
           )}
         </div>
 
-        {/* Right side: bulk toggle + badge + chevron */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Right side: bulk toggle + badge + chevron — clicking here collapses */}
+        <div
+          className="flex items-center gap-3 flex-shrink-0 cursor-pointer"
+          onClick={() => setCollapsed((v) => !v)}
+        >
           <button
             disabled={total === 0}
             onClick={(e) => {
