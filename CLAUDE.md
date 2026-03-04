@@ -32,6 +32,8 @@ All state lives client-side; there is no backend or API layer.
 | `components/AddCategoryForm.tsx` | Button/form to append a new category |
 | `components/ChecklistStats.tsx` | Progress bar + packed count + reset button |
 | `components/FilterBar.tsx` | Search input + "Chi quan trong" must-only toggle + "An da xong" hide-checked toggle (glass-card, `'use client'`) |
+| `components/ThemeToggle.tsx` | Dark mode toggle — reads/writes `"beach-dark-mode"` localStorage, toggles `dark` class on `<html>` |
+| `components/ExportButton.tsx` | Clipboard copy + Web Share API "Chia se" button (feature-detected at mount) |
 
 ### State shape
 
@@ -44,7 +46,7 @@ Category[]  // stored in localStorage under "beach-checklist"
 Default data (`lib/defaultData.ts`) contains 9 Vietnamese Nha Trang categories:
 `Đồ Bơi & Lặn`, `Trang Phục`, `Giày Dép`, `Vệ Sinh Cá Nhân`, `Chống Nắng & Biển`, `Thuốc & Sức Khoẻ`, `Điện Tử & Tiện Ích`, `Giấy Tờ & Tài Chính`, `Đồ Lặt Vặt Tiện Ích`.
 
-`useChecklist` exposes: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `resetAll`, `renameItem`, `updateNote`, `renameCategory`, `bulkToggleCategory`, `moveCategory(id, 'up'|'down')`, plus derived `totalItems` / `checkedItems`.
+`useChecklist` exposes: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `removeCategory`, `resetAll`, `renameItem`, `updateNote`, `renameCategory`, `bulkToggleCategory`, `moveCategory(id, 'up'|'down')`, `undo`, `canUndo`, plus derived `totalItems` / `checkedItems`.
 
 ### Filter / visibility pattern
 
@@ -54,6 +56,22 @@ Filter state (`searchQuery`, `mustOnly`, `hideChecked`) lives in `app/page.tsx` 
 - `category.items` is still used inside the component for badge counts so totals remain accurate regardless of active filters.
 - Categories whose `visibleItems` is empty are omitted from the rendered list entirely.
 - All three filters compose simultaneously (search AND must-only AND hide-checked).
+
+### localStorage keys
+
+| Key | Shape | Purpose |
+|-----|-------|---------|
+| `"beach-checklist"` | `Category[]` | Main checklist state |
+| `"beach-collapse-state"` | `Record<string, boolean>` | Per-category collapsed/expanded state |
+| `"beach-dark-mode"` | `"true" \| "false"` | Dark mode preference |
+
+### Dark mode pattern
+
+Tailwind is configured with `darkMode: "class"`. The `ThemeToggle` component toggles the `dark` class on `document.documentElement` and persists the choice in `"beach-dark-mode"` localStorage.
+
+To prevent a flash of unstyled content (FOUC), `app/layout.tsx` includes a blocking `<script>` in `<head>` that reads `"beach-dark-mode"` and applies the `dark` class before first paint. The `<html>` tag has `suppressHydrationWarning` to avoid a React mismatch when the server-rendered class differs from the client.
+
+When adding dark variants to new components, follow the existing convention: pair each light style with a `dark:` variant (e.g., `text-gray-800 dark:text-gray-100`, `bg-white/70 dark:bg-slate-700`).
 
 ### Tailwind theme
 

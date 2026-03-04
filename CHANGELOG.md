@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-batch-d] - 2026-03-04
+### Added
+- **Delete category** — `removeCategory` action in `useChecklist`; delete button (`x`) in `CategorySection` header with `window.confirm` guard.
+- **Collapse memory** — category collapsed/expanded state persisted per category in localStorage under `"beach-collapse-state"` (`Record<string, boolean>`).
+- **Web Share API** — `ExportButton` detects `navigator.share` at mount; shows a "Chia se" button alongside the existing clipboard-copy button. Falls back to clipboard on share failure/cancel.
+- **Dark mode** — `darkMode: "class"` in Tailwind config; new `ThemeToggle` component reads/writes `"beach-dark-mode"` localStorage and toggles the `dark` class on `<html>`. A blocking `<script>` in `layout.tsx` prevents FOUC. All components received `dark:` variant classes.
+
+### Changed
+- `useChecklist` now exports `removeCategory` (total exports: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `removeCategory`, `renameItem`, `updateNote`, `renameCategory`, `bulkToggleCategory`, `resetAll`, `moveCategory`, `undo`, `canUndo`).
+- `CategorySection` accepts new `onRemoveCategory` prop.
+- `app/layout.tsx` adds `suppressHydrationWarning` on `<html>` and a blocking dark-mode script in `<head>`.
+- Test suite expanded with 37 new tests across 4 test files (useChecklist, CategorySection, ThemeToggle, ExportButton).
+
+---
+
 ## [Unreleased]
 
 ### Added
