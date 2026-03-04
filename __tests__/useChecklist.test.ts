@@ -1,9 +1,10 @@
 /**
  * Tests for lib/useChecklist.ts
  *
- * Covers: toggleItem, addItem (no note/tag), removeItem, addCategory (no icon),
- * resetAll, localStorage persistence, derived totalItems / checkedItems,
- * renameItem, updateNote, renameCategory, bulkToggleCategory.
+ * Covers: toggleItem, addItem (no note/tag), removeItem, removeCategory,
+ * addCategory (no icon), resetAll, localStorage persistence, derived
+ * totalItems / checkedItems, renameItem, updateNote, renameCategory,
+ * bulkToggleCategory.
  *
  * localStorage is replaced with an in-memory implementation before each test
  * so tests are isolated and do not mutate the real storage.
@@ -815,5 +816,104 @@ describe("useChecklist — bulkToggleCategory", () => {
     const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
     const cat = stored.find((c: { id: string }) => c.id === firstCat.id);
     expect(cat.items.every((i: { checked: boolean }) => i.checked)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// removeCategory
+// ---------------------------------------------------------------------------
+
+describe("useChecklist — removeCategory", () => {
+  it("removes the category with the given id", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.removeCategory(firstCat.id);
+    });
+
+    expect(result.current.categories.find((c) => c.id === firstCat.id)).toBeUndefined();
+  });
+
+  it("decrements the category count by 1 after removal", async () => {
+    const result = await mountHook();
+    const before = result.current.categories.length;
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.removeCategory(firstCat.id);
+    });
+
+    expect(result.current.categories).toHaveLength(before - 1);
+  });
+
+  it("decrements totalItems by the number of items in the removed category", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const beforeTotal = result.current.totalItems;
+    const removedCount = firstCat.items.length;
+
+    act(() => {
+      result.current.removeCategory(firstCat.id);
+    });
+
+    expect(result.current.totalItems).toBe(beforeTotal - removedCount);
+  });
+
+  it("does not affect other categories when removing one", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const secondCat = result.current.categories[1];
+
+    act(() => {
+      result.current.removeCategory(firstCat.id);
+    });
+
+    const surviving = result.current.categories.find((c) => c.id === secondCat.id);
+    expect(surviving).toBeDefined();
+    expect(surviving!.name).toBe(secondCat.name);
+    expect(surviving!.items).toHaveLength(secondCat.items.length);
+  });
+
+  it("persists the removal to localStorage", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.removeCategory(firstCat.id);
+    });
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
+    expect(stored.find((c: { id: string }) => c.id === firstCat.id)).toBeUndefined();
+  });
+
+  it("supports undo after removing a category", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const beforeLength = result.current.categories.length;
+
+    act(() => {
+      result.current.removeCategory(firstCat.id);
+    });
+
+    expect(result.current.categories).toHaveLength(beforeLength - 1);
+
+    act(() => {
+      result.current.undo();
+    });
+
+    expect(result.current.categories).toHaveLength(beforeLength);
+    expect(result.current.categories.find((c) => c.id === firstCat.id)).toBeDefined();
+  });
+
+  it("does nothing when categoryId does not exist", async () => {
+    const result = await mountHook();
+    const before = result.current.categories.length;
+
+    act(() => {
+      result.current.removeCategory("non-existent-cat");
+    });
+
+    expect(result.current.categories).toHaveLength(before);
   });
 });

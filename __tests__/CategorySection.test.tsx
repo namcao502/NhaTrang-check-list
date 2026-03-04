@@ -14,6 +14,8 @@
  * - Bulk toggle button: label switches between "Chọn tất cả" and "Bỏ chọn tất cả".
  * - Bulk toggle button: disabled when category has no items.
  * - Bulk toggle button: calls onBulkToggle when clicked.
+ * - Delete category button: renders, calls onRemoveCategory on confirm, skips on cancel.
+ * - Collapse memory: persists collapsed state to localStorage, restores on mount.
  */
 
 import React from "react";
@@ -21,6 +23,26 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import CategorySection from "@/components/CategorySection";
 import type { Category } from "@/lib/types";
+
+// ---------------------------------------------------------------------------
+// localStorage mock
+// ---------------------------------------------------------------------------
+
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => { store[key] = value; },
+    removeItem: (key: string) => { delete store[key]; },
+    clear: () => { store = {}; },
+  };
+})();
+
+Object.defineProperty(window, "localStorage", { value: localStorageMock, writable: true });
+
+beforeEach(() => {
+  localStorageMock.clear();
+});
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -65,6 +87,7 @@ function makeProps(overrides: Partial<{
   onToggleItem: (id: string) => void;
   onAddItem: (label: string, tag?: "must" | "opt") => void;
   onRemoveItem: (id: string) => void;
+  onRemoveCategory: () => void;
   onRenameCategory: (newName: string) => void;
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
@@ -80,6 +103,7 @@ function makeProps(overrides: Partial<{
     onToggleItem: jest.fn(),
     onAddItem: jest.fn(),
     onRemoveItem: jest.fn(),
+    onRemoveCategory: jest.fn(),
     onRenameCategory: jest.fn(),
     onBulkToggle: jest.fn(),
     onRenameItem: jest.fn(),
@@ -456,5 +480,141 @@ describe("CategorySection — move buttons", () => {
     await userEvent.click(screen.getByRole("button", { name: "Di chuyển xuống" }));
 
     expect(onMoveDown).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Delete category button
+// ---------------------------------------------------------------------------
+
+describe("CategorySection — delete category button", () => {
+  it("renders a delete button with the correct aria-label", () => {
+    render(<CategorySection {...makeProps()} />);
+    expect(
+      screen.getByRole("button", { name: `Xoá danh mục ${baseCategory.name}` })
+    ).toBeInTheDocument();
+  });
+
+  it("calls onRemoveCategory when window.confirm returns true", async () => {
+    const onRemoveCategory = jest.fn();
+    jest.spyOn(window, "confirm").mockReturnValue(true);
+
+    render(<CategorySection {...makeProps({ onRemoveCategory })} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: `Xoá danh mục ${baseCategory.name}` })
+    );
+
+    expect(window.confirm).toHaveBeenCalledTimes(1);
+    expect(onRemoveCategory).toHaveBeenCalledTimes(1);
+
+    (window.confirm as jest.Mock).mockRestore();
+  });
+
+  it("does not call onRemoveCategory when window.confirm returns false", async () => {
+    const onRemoveCategory = jest.fn();
+    jest.spyOn(window, "confirm").mockReturnValue(false);
+
+    render(<CategorySection {...makeProps({ onRemoveCategory })} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: `Xoá danh mục ${baseCategory.name}` })
+    );
+
+    expect(window.confirm).toHaveBeenCalledTimes(1);
+    expect(onRemoveCategory).not.toHaveBeenCalled();
+
+    (window.confirm as jest.Mock).mockRestore();
+  });
+
+  it("shows a confirmation message containing the category name", async () => {
+    jest.spyOn(window, "confirm").mockReturnValue(false);
+
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: `Xoá danh mục ${baseCategory.name}` })
+    );
+
+    expect(window.confirm).toHaveBeenCalledWith(
+      expect.stringContaining(baseCategory.name)
+    );
+
+    (window.confirm as jest.Mock).mockRestore();
+  });
+
+  it("does not collapse the section when the delete button is clicked (stopPropagation)", async () => {
+    jest.spyOn(window, "confirm").mockReturnValue(false);
+
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: `Xoá danh mục ${baseCategory.name}` })
+    );
+
+    // Items should still be visible -- the click should not have propagated
+    expect(screen.getByText("Đồ bơi")).toBeInTheDocument();
+
+    (window.confirm as jest.Mock).mockRestore();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Collapse memory (localStorage persistence)
+// ---------------------------------------------------------------------------
+
+describe("CategorySection — collapse memory", () => {
+  function getCollapseTrigger() {
+    return screen.getByText("▾").closest("div")!;
+  }
+
+  it("persists collapsed state to localStorage when collapsed", async () => {
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(getCollapseTrigger());
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-collapse-state")!);
+    expect(stored[baseCategory.id]).toBe(true);
+  });
+
+  it("persists expanded state to localStorage when re-expanded", async () => {
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(getCollapseTrigger());
+    await userEvent.click(getCollapseTrigger());
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-collapse-state")!);
+    expect(stored[baseCategory.id]).toBe(false);
+  });
+
+  it("restores collapsed state from localStorage on mount", () => {
+    // Pre-seed localStorage with collapsed state for this category
+    localStorageMock.setItem(
+      "beach-collapse-state",
+      JSON.stringify({ [baseCategory.id]: true })
+    );
+
+    render(<CategorySection {...makeProps()} />);
+
+    // Items should not be rendered because the category starts collapsed
+    expect(screen.queryByText("Đồ bơi")).not.toBeInTheDocument();
+  });
+
+  it("defaults to expanded for unknown category ids (not in localStorage)", () => {
+    // localStorage is empty (cleared in beforeEach)
+    render(<CategorySection {...makeProps()} />);
+
+    // Items should be visible
+    expect(screen.getByText("Đồ bơi")).toBeInTheDocument();
+  });
+
+  it("does not affect collapse state of other categories", async () => {
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(getCollapseTrigger());
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-collapse-state")!);
+    // Only the current category should be stored
+    expect(Object.keys(stored)).toEqual([baseCategory.id]);
   });
 });
