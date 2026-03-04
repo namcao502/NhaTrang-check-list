@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useCountdown } from "@/lib/useCountdown";
 
 export default function CountdownBanner() {
-  const { departureDate, daysLeft, setDeparture, clearDeparture } = useCountdown();
+  const { departureDate, timeLeft, isPast, setDeparture, clearDeparture } = useCountdown();
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -56,7 +56,8 @@ export default function CountdownBanner() {
     );
   }
 
-  if (daysLeft === null) {
+  // No departure date set (timeLeft is null and not past)
+  if (!departureDate) {
     return (
       <div className="mt-3 flex justify-center">
         <button
@@ -71,12 +72,15 @@ export default function CountdownBanner() {
   }
 
   let message: string;
-  if (daysLeft > 0) {
-    message = `✈️ Còn ${daysLeft} ngày nữa là đi!`;
-  } else if (daysLeft === 0) {
-    message = "🎉 Hôm nay là ngày đi!";
-  } else {
+  if (isPast) {
     message = "Chuyến đi đã qua rồi!";
+  } else if (timeLeft && timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
+    message = "🎉 Hôm nay là ngày đi!";
+  } else if (timeLeft) {
+    message = `✈️ Còn ${timeLeft.days} ngày · ${timeLeft.hours} giờ · ${timeLeft.minutes} phút · ${timeLeft.seconds} giây`;
+  } else {
+    // Fallback while loading (departureDate set but timeLeft not yet computed)
+    message = "...";
   }
 
   return (
@@ -87,14 +91,14 @@ export default function CountdownBanner() {
       <button
         type="button"
         onClick={handleOpen}
-        className="text-xs text-ocean-600 dark:text-ocean-400 underline underline-offset-2 hover:text-ocean-700 dark:hover:text-ocean-300 transition"
+        className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-sm text-ocean-600 dark:text-ocean-400 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
       >
         Thay đổi
       </button>
       <button
         type="button"
         onClick={handleClear}
-        className="text-xs text-gray-400 dark:text-gray-400 underline underline-offset-2 hover:text-gray-600 dark:hover:text-gray-300 transition"
+        className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-sm text-gray-500 dark:text-gray-400 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
       >
         Xoá
       </button>
