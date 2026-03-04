@@ -2,7 +2,8 @@
  * Tests for lib/useChecklist.ts
  *
  * Covers: toggleItem, addItem (no note/tag), removeItem, addCategory (no icon),
- * resetAll, localStorage persistence, and derived totalItems / checkedItems.
+ * resetAll, localStorage persistence, derived totalItems / checkedItems,
+ * renameItem, updateNote, renameCategory, bulkToggleCategory.
  *
  * localStorage is replaced with an in-memory implementation before each test
  * so tests are isolated and do not mutate the real storage.
@@ -422,5 +423,321 @@ describe("useChecklist — localStorage persistence", () => {
     const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
     const labels = stored[0].items.map((i: { label: string }) => i.label);
     expect(labels).toContain("Persisted item");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// renameItem
+// ---------------------------------------------------------------------------
+
+describe("useChecklist — renameItem", () => {
+  it("updates the item label with a trimmed new name", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+
+    act(() => {
+      result.current.renameItem(firstCat.id, firstItem.id, "  Updated Label  ");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === firstItem.id)!;
+    expect(item.label).toBe("Updated Label");
+  });
+
+  it("does not rename when new label is empty string", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+    const originalLabel = firstItem.label;
+
+    act(() => {
+      result.current.renameItem(firstCat.id, firstItem.id, "");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === firstItem.id)!;
+    expect(item.label).toBe(originalLabel);
+  });
+
+  it("does not rename when new label is only whitespace", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+    const originalLabel = firstItem.label;
+
+    act(() => {
+      result.current.renameItem(firstCat.id, firstItem.id, "   ");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === firstItem.id)!;
+    expect(item.label).toBe(originalLabel);
+  });
+
+  it("does not affect other items in the same category", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+    const secondItem = firstCat.items[1];
+
+    if (!secondItem) return;
+
+    const secondOriginalLabel = secondItem.label;
+
+    act(() => {
+      result.current.renameItem(firstCat.id, firstItem.id, "Changed");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const second = cat.items.find((i) => i.id === secondItem.id)!;
+    expect(second.label).toBe(secondOriginalLabel);
+  });
+
+  it("persists rename to localStorage", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+
+    act(() => {
+      result.current.renameItem(firstCat.id, firstItem.id, "Persisted Rename");
+    });
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
+    const item = stored[0].items.find((i: { id: string }) => i.id === firstItem.id);
+    expect(item.label).toBe("Persisted Rename");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// updateNote
+// ---------------------------------------------------------------------------
+
+describe("useChecklist — updateNote", () => {
+  it("sets a note on an item that had none", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    // Find an item without a note
+    const targetItem = firstCat.items.find((i) => !i.note) ?? firstCat.items[0];
+
+    act(() => {
+      result.current.updateNote(firstCat.id, targetItem.id, "Ghi chú mới");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === targetItem.id)!;
+    expect(item.note).toBe("Ghi chú mới");
+  });
+
+  it("trims whitespace from the note", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+
+    act(() => {
+      result.current.updateNote(firstCat.id, firstItem.id, "  Trimmed note  ");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === firstItem.id)!;
+    expect(item.note).toBe("Trimmed note");
+  });
+
+  it("removes the note property when an empty string is passed", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+
+    // First set a note, then clear it
+    act(() => {
+      result.current.updateNote(firstCat.id, firstItem.id, "Some note");
+    });
+    act(() => {
+      result.current.updateNote(firstCat.id, firstItem.id, "");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === firstItem.id)!;
+    expect(item.note).toBeUndefined();
+  });
+
+  it("removes the note property when only whitespace is passed", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+
+    act(() => {
+      result.current.updateNote(firstCat.id, firstItem.id, "Will be removed");
+    });
+    act(() => {
+      result.current.updateNote(firstCat.id, firstItem.id, "   ");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    const item = cat.items.find((i) => i.id === firstItem.id)!;
+    expect(item.note).toBeUndefined();
+  });
+
+  it("persists the note to localStorage", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const firstItem = firstCat.items[0];
+
+    act(() => {
+      result.current.updateNote(firstCat.id, firstItem.id, "Persisted note");
+    });
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
+    const item = stored[0].items.find((i: { id: string }) => i.id === firstItem.id);
+    expect(item.note).toBe("Persisted note");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// renameCategory
+// ---------------------------------------------------------------------------
+
+describe("useChecklist — renameCategory", () => {
+  it("updates the category name with a trimmed new name", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.renameCategory(firstCat.id, "  Tên mới  ");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    expect(cat.name).toBe("Tên mới");
+  });
+
+  it("does not rename when new name is empty string", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const originalName = firstCat.name;
+
+    act(() => {
+      result.current.renameCategory(firstCat.id, "");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    expect(cat.name).toBe(originalName);
+  });
+
+  it("does not rename when new name is only whitespace", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const originalName = firstCat.name;
+
+    act(() => {
+      result.current.renameCategory(firstCat.id, "   ");
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    expect(cat.name).toBe(originalName);
+  });
+
+  it("does not affect other categories", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const secondCat = result.current.categories[1];
+    const secondOriginalName = secondCat.name;
+
+    act(() => {
+      result.current.renameCategory(firstCat.id, "Changed");
+    });
+
+    const second = result.current.categories.find((c) => c.id === secondCat.id)!;
+    expect(second.name).toBe(secondOriginalName);
+  });
+
+  it("persists the new category name to localStorage", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.renameCategory(firstCat.id, "Persisted Name");
+    });
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
+    const cat = stored.find((c: { id: string }) => c.id === firstCat.id);
+    expect(cat.name).toBe("Persisted Name");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// bulkToggleCategory
+// ---------------------------------------------------------------------------
+
+describe("useChecklist — bulkToggleCategory", () => {
+  it("checks all items when not all are currently checked", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.bulkToggleCategory(firstCat.id);
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    expect(cat.items.every((i) => i.checked)).toBe(true);
+  });
+
+  it("unchecks all items when all are currently checked", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    // Check all first
+    act(() => {
+      result.current.bulkToggleCategory(firstCat.id);
+    });
+    // Then uncheck all
+    act(() => {
+      result.current.bulkToggleCategory(firstCat.id);
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    expect(cat.items.every((i) => !i.checked)).toBe(true);
+  });
+
+  it("checks all items when only some are currently checked", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    // Check only the first item so the category is partially checked
+    act(() => {
+      result.current.toggleItem(firstCat.id, firstCat.items[0].id);
+    });
+
+    act(() => {
+      result.current.bulkToggleCategory(firstCat.id);
+    });
+
+    const cat = result.current.categories.find((c) => c.id === firstCat.id)!;
+    expect(cat.items.every((i) => i.checked)).toBe(true);
+  });
+
+  it("does not affect other categories", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+    const secondCat = result.current.categories[1];
+
+    act(() => {
+      result.current.bulkToggleCategory(firstCat.id);
+    });
+
+    const second = result.current.categories.find((c) => c.id === secondCat.id)!;
+    expect(second.items.every((i) => !i.checked)).toBe(true);
+  });
+
+  it("persists the bulk-toggled state to localStorage", async () => {
+    const result = await mountHook();
+    const firstCat = result.current.categories[0];
+
+    act(() => {
+      result.current.bulkToggleCategory(firstCat.id);
+    });
+
+    const stored = JSON.parse(localStorageMock.getItem("beach-checklist")!);
+    const cat = stored.find((c: { id: string }) => c.id === firstCat.id);
+    expect(cat.items.every((i: { checked: boolean }) => i.checked)).toBe(true);
   });
 });
