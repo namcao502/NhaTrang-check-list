@@ -15,13 +15,17 @@ export default function Home() {
     addItem,
     removeItem,
     addCategory,
+    renameItem,
+    updateNote,
+    renameCategory,
+    bulkToggleCategory,
     resetAll,
   } = useChecklist();
 
   if (!loaded) {
     return (
       <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400">
-        Loading...
+        Đang tải...
       </main>
     );
   }
@@ -68,8 +72,12 @@ export default function Home() {
               key={cat.id}
               category={cat}
               onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
-              onAddItem={(label) => addItem(cat.id, label)}
+              onAddItem={(label, tag) => addItem(cat.id, label, tag)}
               onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
+              onRenameCategory={(newName) => renameCategory(cat.id, newName)}
+              onBulkToggle={() => bulkToggleCategory(cat.id)}
+              onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}
+              onNoteChange={(itemId, note) => updateNote(cat.id, itemId, note)}
             />
           ))}
 
