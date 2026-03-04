@@ -153,7 +153,7 @@ export default function CategorySection({
 
         {/* Right side: bulk toggle + move buttons + badge + chevron — clicking here collapses */}
         <div
-          className="flex items-center gap-2 flex-shrink-0 cursor-pointer"
+          className="flex items-center gap-1.5 flex-shrink-0 cursor-pointer"
           onClick={() => setCollapsed((v) => !v)}
         >
           <button
@@ -173,7 +173,7 @@ export default function CategorySection({
             <button
               aria-label="Di chuyển lên"
               onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-              className="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm px-1 leading-none"
+              className="w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
             >
               ↑
             </button>
@@ -182,7 +182,7 @@ export default function CategorySection({
             <button
               aria-label="Di chuyển xuống"
               onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-              className="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm px-1 leading-none"
+              className="w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
             >
               ↓
             </button>
@@ -190,13 +190,13 @@ export default function CategorySection({
           <button
             aria-label={`Xoá danh mục ${category.name}`}
             onClick={(e) => { e.stopPropagation(); handleDeleteCategory(); }}
-            className="text-gray-300 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 text-lg px-1 leading-none transition-colors"
+            className="w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-300 hover:text-red-500 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors"
           >
             ×
           </button>
-          <span className={`text-gray-400 dark:text-gray-400 transition-transform ${collapsed ? "-rotate-90" : ""}`}>
+          <button className={`w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-all ${collapsed ? "-rotate-90" : ""}`}>
             ▾
-          </span>
+          </button>
         </div>
       </div>
 
