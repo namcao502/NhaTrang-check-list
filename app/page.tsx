@@ -38,7 +38,10 @@ export default function Home() {
 
   const prevAllDone = useRef(false);
   useEffect(() => {
-    if (!loaded) return;           // skip until localStorage has been restored
+    if (!loaded) {
+      prevAllDone.current = allDone; // prime ref during loading so first real eval is accurate
+      return;
+    }
     if (allDone && !prevAllDone.current) {
       import('canvas-confetti').then((mod) => {
         mod.default({

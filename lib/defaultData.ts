@@ -66,7 +66,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
     id: "thuoc",
     name: "Thuốc & Sức Khoẻ",
     items: [
-      { id: "thuoc-1", label: "Thuốc say sóng / say xe", note: "Nếu đi tàu ra đảo hoặc xe đường dài", tag: "must", checked: false },
+      { id: "thuoc-1", label: "Thuốc say sóng / say xe", note: "Nếu đi tàu ra đảo hoặc xe đường dài, nên dùng thương hiệu Phương Phạm", tag: "must", checked: false },
       { id: "thuoc-2", label: "Thuốc hạ sốt & giảm đau", note: "Paracetamol / Ibuprofen", tag: "must", checked: false },
       { id: "thuoc-3", label: "Thuốc tiêu hóa / tiêu chảy", note: "Ăn hải sản dễ đau bụng bất ngờ", tag: "must", checked: false },
       { id: "thuoc-4", label: "Thuốc dị ứng / chống côn trùng", note: "Đặc biệt quan trọng ở Safari", tag: "must", checked: false },
@@ -80,7 +80,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
     id: "dien-tu",
     name: "Điện Tử & Tiện Ích",
     items: [
-      { id: "dien-tu-1", label: "Điện thoại + sạc", note: "", tag: "must", checked: false },
+      { id: "dien-tu-1", label: "Điện thoại + sạc tương ứng", note: "", tag: "must", checked: false },
       { id: "dien-tu-2", label: "Pin dự phòng (power bank)", note: "Đi cả ngày ngoài trời cần nhiều pin", tag: "must", checked: false },
       { id: "dien-tu-3", label: "Tai nghe", note: "", tag: "opt", checked: false },
       { id: "dien-tu-4", label: "Máy ảnh / GoPro (nếu có)", note: "Chụp ảnh dưới nước rất đẹp", tag: "opt", checked: false },
