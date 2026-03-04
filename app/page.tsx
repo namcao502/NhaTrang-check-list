@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChecklist } from "@/lib/useChecklist";
 import CategorySection from "@/components/CategorySection";
 import ChecklistStats from "@/components/ChecklistStats";
 import AddCategoryForm from "@/components/AddCategoryForm";
 import FilterBar from "@/components/FilterBar";
+import CountdownBanner from "@/components/CountdownBanner";
+import ExportButton from "@/components/ExportButton";
+import UndoButton from "@/components/UndoButton";
 
 export default function Home() {
   const {
@@ -23,11 +26,29 @@ export default function Home() {
     bulkToggleCategory,
     resetAll,
     moveCategory,
+    undo,
+    canUndo,
   } = useChecklist();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [mustOnly, setMustOnly] = useState(false);
   const [hideChecked, setHideChecked] = useState(false);
+
+  const allDone = checkedItems === totalItems && totalItems > 0;
+
+  const prevAllDone = useRef(false);
+  useEffect(() => {
+    if (allDone && !prevAllDone.current) {
+      import('canvas-confetti').then((mod) => {
+        mod.default({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+      });
+    }
+    prevAllDone.current = allDone;
+  }, [allDone]);
 
   if (!loaded) {
     return (
@@ -36,8 +57,6 @@ export default function Home() {
       </main>
     );
   }
-
-  const allDone = checkedItems === totalItems && totalItems > 0;
 
   const anyFilterActive = searchQuery.trim() !== '' || mustOnly || hideChecked;
 
@@ -79,6 +98,7 @@ export default function Home() {
             Nha Trang Packing List
           </h1>
           <p className="text-gray-600 text-sm">🏖️ Biển · 🎢 Vinwonders · 🦁 Safari</p>
+          <CountdownBanner />
         </header>
 
         {allDone && (
@@ -95,6 +115,8 @@ export default function Home() {
               onReset={resetAll}
             />
           </div>
+
+          <ExportButton categories={categories} />
 
           <FilterBar
             searchQuery={searchQuery}
@@ -128,6 +150,8 @@ export default function Home() {
           <AddCategoryForm onAdd={addCategory} />
         </div>
       </main>
+
+      <UndoButton canUndo={canUndo} onUndo={undo} />
     </>
   );
 }

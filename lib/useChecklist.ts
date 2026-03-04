@@ -13,6 +13,11 @@ function generateId(): string {
 export function useChecklist() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [undoStack, setUndoStack] = useState<Category[][]>([]);
+
+  function pushUndo() {
+    setUndoStack((prev) => [...prev.slice(-9), categories]);
+  }
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -32,6 +37,7 @@ export function useChecklist() {
   }, [categories, loaded]);
 
   function toggleItem(categoryId: string, itemId: string) {
+    pushUndo();
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId
@@ -49,6 +55,7 @@ export function useChecklist() {
   function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string) {
     const trimmed = label.trim();
     if (!trimmed) return;
+    pushUndo();
     const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}) };
     setCategories((prev) =>
       prev.map((cat) =>
@@ -58,6 +65,7 @@ export function useChecklist() {
   }
 
   function removeItem(categoryId: string, itemId: string) {
+    pushUndo();
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId
@@ -70,6 +78,7 @@ export function useChecklist() {
   function addCategory(name: string) {
     const trimmed = name.trim();
     if (!trimmed) return;
+    pushUndo();
     setCategories((prev) => [
       ...prev,
       { id: generateId(), name: trimmed, items: [] },
@@ -79,6 +88,7 @@ export function useChecklist() {
   function renameItem(categoryId: string, itemId: string, newLabel: string) {
     const trimmed = newLabel.trim();
     if (!trimmed) return;
+    pushUndo();
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId
@@ -94,6 +104,7 @@ export function useChecklist() {
   }
 
   function updateNote(categoryId: string, itemId: string, note: string) {
+    pushUndo();
     const trimmed = note.trim();
     setCategories((prev) =>
       prev.map((cat) =>
@@ -118,6 +129,7 @@ export function useChecklist() {
   function renameCategory(categoryId: string, newName: string) {
     const trimmed = newName.trim();
     if (!trimmed) return;
+    pushUndo();
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId ? cat : { ...cat, name: trimmed }
@@ -126,6 +138,7 @@ export function useChecklist() {
   }
 
   function bulkToggleCategory(categoryId: string) {
+    pushUndo();
     setCategories((prev) =>
       prev.map((cat) => {
         if (cat.id !== categoryId) return cat;
@@ -143,6 +156,7 @@ export function useChecklist() {
   }
 
   function moveCategory(categoryId: string, direction: 'up' | 'down') {
+    pushUndo();
     setCategories((prev) => {
       const idx = prev.findIndex((c) => c.id === categoryId);
       if (idx === -1) return prev;
@@ -153,6 +167,18 @@ export function useChecklist() {
       return next;
     });
   }
+
+  function undo() {
+    setUndoStack((prev) => {
+      if (prev.length === 0) return prev;
+      const next = [...prev];
+      const restored = next.pop()!;
+      setCategories(restored);
+      return next;
+    });
+  }
+
+  const canUndo = undoStack.length > 0;
 
   const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
   const checkedItems = categories.reduce(
@@ -175,5 +201,7 @@ export function useChecklist() {
     bulkToggleCategory,
     resetAll,
     moveCategory,
+    undo,
+    canUndo,
   };
 }
