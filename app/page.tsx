@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useChecklist } from "@/lib/useChecklist";
 import CategorySection from "@/components/CategorySection";
 import ChecklistStats from "@/components/ChecklistStats";
 import AddCategoryForm from "@/components/AddCategoryForm";
+import FilterBar from "@/components/FilterBar";
 
 export default function Home() {
   const {
@@ -16,7 +18,12 @@ export default function Home() {
     removeItem,
     addCategory,
     resetAll,
+    moveCategory,
   } = useChecklist();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mustOnly, setMustOnly] = useState(false);
+  const [hideChecked, setHideChecked] = useState(false);
 
   if (!loaded) {
     return (
@@ -27,6 +34,26 @@ export default function Home() {
   }
 
   const allDone = checkedItems === totalItems && totalItems > 0;
+
+  const anyFilterActive = searchQuery.trim() !== '' || mustOnly || hideChecked;
+
+  const visibleCategories = categories
+    .map((cat) => {
+      let items = cat.items;
+      if (searchQuery.trim()) {
+        items = items.filter((item) =>
+          item.label.toLowerCase().includes(searchQuery.trim().toLowerCase())
+        );
+      }
+      if (mustOnly) {
+        items = items.filter((item) => item.tag === 'must');
+      }
+      if (hideChecked) {
+        items = items.filter((item) => !item.checked);
+      }
+      return { cat, visibleItems: items };
+    })
+    .filter(({ visibleItems }) => !anyFilterActive || visibleItems.length > 0);
 
   return (
     <>
@@ -63,15 +90,30 @@ export default function Home() {
             onReset={resetAll}
           />
 
-          {categories.map((cat) => (
-            <CategorySection
-              key={cat.id}
-              category={cat}
-              onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
-              onAddItem={(label) => addItem(cat.id, label)}
-              onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
-            />
-          ))}
+          <FilterBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            mustOnly={mustOnly}
+            onMustOnlyChange={setMustOnly}
+            hideChecked={hideChecked}
+            onHideCheckedChange={setHideChecked}
+          />
+
+          {visibleCategories.map(({ cat, visibleItems }) => {
+            const origIdx = categories.findIndex((c) => c.id === cat.id);
+            return (
+              <CategorySection
+                key={cat.id}
+                category={cat}
+                visibleItems={visibleItems}
+                onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
+                onAddItem={(label) => addItem(cat.id, label)}
+                onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
+                onMoveUp={origIdx > 0 ? () => moveCategory(cat.id, 'up') : undefined}
+                onMoveDown={origIdx < categories.length - 1 ? () => moveCategory(cat.id, 'down') : undefined}
+              />
+            );
+          })}
 
           <AddCategoryForm onAdd={addCategory} />
         </div>

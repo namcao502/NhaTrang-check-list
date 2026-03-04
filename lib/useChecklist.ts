@@ -80,6 +80,18 @@ export function useChecklist() {
     setCategories(DEFAULT_CATEGORIES);
   }
 
+  function moveCategory(categoryId: string, direction: 'up' | 'down') {
+    setCategories((prev) => {
+      const idx = prev.findIndex((c) => c.id === categoryId);
+      if (idx === -1) return prev;
+      const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= prev.length) return prev;
+      const next = [...prev];
+      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+      return next;
+    });
+  }
+
   const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
   const checkedItems = categories.reduce(
     (sum, cat) => sum + cat.items.filter((i) => i.checked).length,
@@ -96,5 +108,6 @@ export function useChecklist() {
     removeItem,
     addCategory,
     resetAll,
+    moveCategory,
   };
 }
