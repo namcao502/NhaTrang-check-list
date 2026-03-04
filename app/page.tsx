@@ -38,6 +38,7 @@ export default function Home() {
 
   const prevAllDone = useRef(false);
   useEffect(() => {
+    if (!loaded) return;           // skip until localStorage has been restored
     if (allDone && !prevAllDone.current) {
       import('canvas-confetti').then((mod) => {
         mod.default({
@@ -48,7 +49,7 @@ export default function Home() {
       });
     }
     prevAllDone.current = allDone;
-  }, [allDone]);
+  }, [allDone, loaded]);
 
   if (!loaded) {
     return (

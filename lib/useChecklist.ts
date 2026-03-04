@@ -104,8 +104,13 @@ export function useChecklist() {
   }
 
   function updateNote(categoryId: string, itemId: string, note: string) {
-    pushUndo();
     const trimmed = note.trim();
+    // No-op guard: skip pushUndo when the note value has not changed
+    const cat = categories.find((c) => c.id === categoryId);
+    const item = cat?.items.find((i) => i.id === itemId);
+    const currentNote = item?.note ?? '';
+    if (trimmed === currentNote) return;
+    pushUndo();
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId
