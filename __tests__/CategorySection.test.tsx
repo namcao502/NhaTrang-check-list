@@ -97,7 +97,7 @@ describe("CategorySection — icon", () => {
       <CategorySection {...makeProps({ category: categoryWithoutIcon })} />
     );
     // The icon span should not be in the DOM at all
-    expect(container.querySelector("span.text-xl")).not.toBeInTheDocument();
+    expect(container.querySelector("span.flex-shrink-0.text-xl")).not.toBeInTheDocument();
   });
 });
 
@@ -211,7 +211,7 @@ describe("CategorySection — callbacks", () => {
     await userEvent.type(input, "New snorkel");
     await userEvent.click(screen.getByRole("button", { name: /^thêm$/i }));
 
-    expect(onAddItem).toHaveBeenCalledWith("New snorkel", undefined);
+    expect(onAddItem).toHaveBeenCalledWith("New snorkel", undefined, undefined);
   });
 });
 

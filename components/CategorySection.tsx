@@ -8,7 +8,7 @@ import AddItemForm from "./AddItemForm";
 interface Props {
   category: Category;
   onToggleItem: (itemId: string) => void;
-  onAddItem: (label: string, tag?: "must" | "opt") => void;
+  onAddItem: (label: string, tag?: "must" | "opt", note?: string) => void;
   onRemoveItem: (itemId: string) => void;
   onRenameCategory: (newName: string) => void;
   onBulkToggle: () => void;
@@ -60,7 +60,7 @@ export default function CategorySection({
   return (
     <section className="glass-card rounded-2xl shadow-lg border border-white/40 overflow-hidden">
       {/* Header — collapse is triggered only by the right-side chevron area */}
-      <div className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/40 transition-colors">
+      <div className="w-full flex items-center justify-between px-5 py-5 hover:bg-white/40 transition-colors">
         {/* Left side: icon + name — stopPropagation so clicks here never collapse */}
         <div
           className="flex items-center gap-3 min-w-0"
@@ -73,7 +73,7 @@ export default function CategorySection({
           {editingName ? (
             <input
               autoFocus
-              className="text-lg font-semibold border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400"
+              className="text-xl font-semibold border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400"
               value={nameDraft}
               onChange={(e) => setNameDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -88,7 +88,7 @@ export default function CategorySection({
             />
           ) : (
             <span
-              className={`text-lg font-semibold cursor-text ${
+              className={`text-xl font-semibold cursor-text ${
                 allDone ? "text-green-600" : "text-gray-800"
               }`}
               onClick={() => {
@@ -118,7 +118,7 @@ export default function CategorySection({
               e.stopPropagation();
               onBulkToggle();
             }}
-            className="text-xs text-ocean-600 hover:text-ocean-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="text-sm sm:text-xs px-2 py-1 text-ocean-600 hover:text-ocean-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {allDone ? "Bỏ chọn tất cả" : "Chọn tất cả"}
           </button>
@@ -136,7 +136,7 @@ export default function CategorySection({
       </div>
 
       {!collapsed && (
-        <div className="px-4 pb-4">
+        <div className="px-3 sm:px-4 pb-5">
           {category.items.length === 0 ? (
             <p className="text-sm text-gray-400 px-3 py-2">Chưa có đồ vật nào.</p>
           ) : (
@@ -157,7 +157,7 @@ export default function CategorySection({
               ))}
             </ul>
           )}
-          <AddItemForm onAdd={(label, tag) => onAddItem(label, tag)} />
+          <AddItemForm onAdd={(label, tag, note) => onAddItem(label, tag, note)} />
         </div>
       )}
     </section>

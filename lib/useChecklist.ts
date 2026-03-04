@@ -46,10 +46,10 @@ export function useChecklist() {
     );
   }
 
-  function addItem(categoryId: string, label: string, tag?: "must" | "opt") {
+  function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string) {
     const trimmed = label.trim();
     if (!trimmed) return;
-    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}) };
+    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}) };
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId ? cat : { ...cat, items: [...cat.items, newItem] }

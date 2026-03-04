@@ -43,7 +43,7 @@ export default function Home() {
         }}
       />
 
-      <main className="max-w-xl mx-auto px-4 pt-4 pb-10">
+      <main className="max-w-2xl mx-auto px-4 sm:px-8 pt-6 pb-20 sm:pb-10">
         <header className="text-center mb-8">
           <div className="inline-block bg-coral-100 text-coral-600 text-sm font-medium px-4 py-1.5 rounded-full mb-3">
             ✈️ Kế hoạch chuyến đi
@@ -60,19 +60,21 @@ export default function Home() {
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
-          <ChecklistStats
-            checked={checkedItems}
-            total={totalItems}
-            onReset={resetAll}
-          />
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="sticky top-3 z-10">
+            <ChecklistStats
+              checked={checkedItems}
+              total={totalItems}
+              onReset={resetAll}
+            />
+          </div>
 
           {categories.map((cat) => (
             <CategorySection
               key={cat.id}
               category={cat}
               onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
-              onAddItem={(label, tag) => addItem(cat.id, label, tag)}
+              onAddItem={(label, tag, note) => addItem(cat.id, label, tag, note)}
               onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
               onRenameCategory={(newName) => renameCategory(cat.id, newName)}
               onBulkToggle={() => bulkToggleCategory(cat.id)}

@@ -71,7 +71,7 @@ export default function ChecklistItem({
 
   return (
     <li
-      className={`flex items-start gap-3 py-2 px-3 rounded-lg group transition-colors ${
+      className={`flex items-start gap-3 py-3 px-3 rounded-lg group transition-colors ${
         checked ? "bg-blue-50" : "hover:bg-ocean-50"
       }`}
     >
@@ -80,7 +80,7 @@ export default function ChecklistItem({
         type="checkbox"
         checked={checked}
         onChange={onToggle}
-        className="w-5 h-5 rounded accent-ocean-600 cursor-pointer flex-shrink-0 mt-0.5"
+        className="w-6 h-6 rounded accent-ocean-600 cursor-pointer flex-shrink-0 mt-0.5"
       />
 
       <div className="flex-1 min-w-0">
@@ -102,7 +102,7 @@ export default function ChecklistItem({
           />
         ) : (
           <span
-            className={`text-sm cursor-text select-none ${
+            className={`text-base cursor-text select-none ${
               checked ? "line-through text-gray-400" : "text-gray-700"
             }`}
             onClick={() => {
@@ -134,7 +134,7 @@ export default function ChecklistItem({
           />
         ) : note ? (
           <span
-            className="block text-xs text-gray-400 mt-0.5 cursor-text"
+            className="block text-sm text-gray-400 mt-0.5 cursor-text"
             onClick={() => {
               setNoteDraft(note);
               setEditingNote(true);
@@ -149,7 +149,7 @@ export default function ChecklistItem({
               setNoteDraft("");
               setEditingNote(true);
             }}
-            className="block text-xs text-gray-300 hover:text-ocean-400 transition-colors mt-0.5 leading-none"
+            className="block text-sm text-gray-300 hover:text-ocean-400 transition-colors mt-0.5 px-1 leading-none"
           >
             +
           </button>
@@ -169,7 +169,7 @@ export default function ChecklistItem({
       <button
         onClick={onRemove}
         aria-label={`Xoá ${label}`}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 text-lg leading-none flex-shrink-0"
+        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 text-xl p-1 leading-none flex-shrink-0"
       >
         ×
       </button>
