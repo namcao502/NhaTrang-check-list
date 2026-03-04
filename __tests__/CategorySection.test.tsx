@@ -51,12 +51,18 @@ const categoryWithoutIcon: Category = {
 
 function makeProps(overrides: Partial<{
   category: Category;
+  visibleItems: Category["items"];
   onToggleItem: (id: string) => void;
   onAddItem: (label: string) => void;
   onRemoveItem: (id: string) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }> = {}) {
+  const category = overrides.category ?? baseCategory;
   return {
-    category: baseCategory,
+    category,
+    // Default: show all items (mirrors the no-filter behaviour in page.tsx)
+    visibleItems: category.items,
     onToggleItem: jest.fn(),
     onAddItem: jest.fn(),
     onRemoveItem: jest.fn(),
@@ -212,5 +218,80 @@ describe("CategorySection — progress counter", () => {
     };
     render(<CategorySection {...makeProps({ category: allChecked })} />);
     expect(screen.getByText(/done/i)).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// visibleItems prop
+// ---------------------------------------------------------------------------
+
+describe("CategorySection — visibleItems", () => {
+  it("renders only the items passed via visibleItems, not the full category.items list", () => {
+    // category has 2 items; pass only the second one as visibleItems
+    const onlySecond = [baseCategory.items[1]];
+    render(<CategorySection {...makeProps({ visibleItems: onlySecond })} />);
+
+    // Second item visible
+    expect(screen.getByText("Ống thở")).toBeInTheDocument();
+    // First item must NOT be visible
+    expect(screen.queryByText("Đồ bơi")).not.toBeInTheDocument();
+  });
+
+  it("shows 'No items yet.' placeholder when visibleItems is an empty array", () => {
+    render(<CategorySection {...makeProps({ visibleItems: [] })} />);
+    expect(screen.getByText("No items yet.")).toBeInTheDocument();
+  });
+
+  it("badge counter still reflects the full category.items count, not visibleItems", () => {
+    // Pass only 1 visible item but category still has 2
+    const onlyFirst = [baseCategory.items[0]];
+    render(<CategorySection {...makeProps({ visibleItems: onlyFirst })} />);
+
+    // Badge should show 0/2 (full category count), not 0/1
+    expect(screen.getByText("0/2")).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Move-up / move-down buttons
+// ---------------------------------------------------------------------------
+
+describe("CategorySection — move buttons", () => {
+  it("renders the up arrow button when onMoveUp is provided", () => {
+    render(<CategorySection {...makeProps({ onMoveUp: jest.fn() })} />);
+    expect(screen.getByRole("button", { name: "Di chuyển lên" })).toBeInTheDocument();
+  });
+
+  it("renders the down arrow button when onMoveDown is provided", () => {
+    render(<CategorySection {...makeProps({ onMoveDown: jest.fn() })} />);
+    expect(screen.getByRole("button", { name: "Di chuyển xuống" })).toBeInTheDocument();
+  });
+
+  it("does not render the up arrow button when onMoveUp is undefined", () => {
+    render(<CategorySection {...makeProps({ onMoveUp: undefined })} />);
+    expect(screen.queryByRole("button", { name: "Di chuyển lên" })).not.toBeInTheDocument();
+  });
+
+  it("does not render the down arrow button when onMoveDown is undefined", () => {
+    render(<CategorySection {...makeProps({ onMoveDown: undefined })} />);
+    expect(screen.queryByRole("button", { name: "Di chuyển xuống" })).not.toBeInTheDocument();
+  });
+
+  it("calls onMoveUp when the up arrow button is clicked", async () => {
+    const onMoveUp = jest.fn();
+    render(<CategorySection {...makeProps({ onMoveUp })} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Di chuyển lên" }));
+
+    expect(onMoveUp).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onMoveDown when the down arrow button is clicked", async () => {
+    const onMoveDown = jest.fn();
+    render(<CategorySection {...makeProps({ onMoveDown })} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Di chuyển xuống" }));
+
+    expect(onMoveDown).toHaveBeenCalledTimes(1);
   });
 });
