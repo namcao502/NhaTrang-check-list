@@ -26,8 +26,8 @@ All state lives client-side; there is no backend or API layer.
 | `lib/defaultData.ts` | Pre-populated beach checklist items grouped by category |
 | `lib/useChecklist.ts` | Custom hook — all state logic + localStorage persistence |
 | `app/page.tsx` | Root page, composes all components |
-| `components/CategorySection.tsx` | Collapsible category with its item list and add-item form |
-| `components/ChecklistItem.tsx` | Single item row with checkbox and delete button |
+| `components/CategorySection.tsx` | Collapsible category (chevron-only trigger) with inline category rename, bulk-toggle button, item list, and add-item form |
+| `components/ChecklistItem.tsx` | Single item row with checkbox, inline label rename, inline note editor, and delete button |
 | `components/AddItemForm.tsx` | Inline form inside a category to add new items |
 | `components/AddCategoryForm.tsx` | Button/form to append a new category |
 | `components/ChecklistStats.tsx` | Progress bar + packed count + reset button |
@@ -43,7 +43,7 @@ Category[]  // stored in localStorage under "beach-checklist"
 Default data (`lib/defaultData.ts`) contains 9 Vietnamese Nha Trang categories:
 `Đồ Bơi & Lặn`, `Trang Phục`, `Giày Dép`, `Vệ Sinh Cá Nhân`, `Chống Nắng & Biển`, `Thuốc & Sức Khoẻ`, `Điện Tử & Tiện Ích`, `Giấy Tờ & Tài Chính`, `Đồ Lặt Vặt Tiện Ích`.
 
-`useChecklist` exposes: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `resetAll`, plus derived `totalItems` / `checkedItems`.
+`useChecklist` exposes: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `resetAll`, `renameItem`, `updateNote`, `renameCategory`, `bulkToggleCategory`, plus derived `totalItems` / `checkedItems`.
 
 ### Tailwind theme
 
@@ -55,3 +55,23 @@ Custom colors defined in `tailwind.config.ts`:
 Font families (CSS vars loaded in `app/layout.tsx`):
 - `font-playfair` — `var(--font-playfair)`, serif, used for headings
 - `font-dm-sans` — `var(--font-dm-sans)`, sans-serif, used for body text
+
+### Inline editing pattern (cancelRef)
+
+Inline edit fields (item label, item note, category name) use a `cancelRef` boolean ref to resolve the Escape/blur race condition:
+
+```ts
+const cancelRef = useRef(false);
+
+const handleKeyDown = (e: React.KeyboardEvent) => {
+  if (e.key === 'Escape') { cancelRef.current = true; /* revert */ }
+  if (e.key === 'Enter')  { /* save */ }
+};
+
+const handleBlur = () => {
+  if (cancelRef.current) { cancelRef.current = false; return; }
+  /* save */
+};
+```
+
+Setting `cancelRef.current = true` before the synthetic blur fires prevents the blur handler from saving a value that was intentionally cancelled. Apply this pattern to any future inline edit field.
