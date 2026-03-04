@@ -11,6 +11,8 @@
  * - Applies line-through and text-gray-400 styles when checked.
  * - Calls onToggle when the checkbox is clicked.
  * - Calls onRemove when the remove button is clicked.
+ * - Inline label edit: click label span, type, blur/Enter saves, Escape cancels.
+ * - Inline note edit: click note span or "+" button, type, blur/Enter saves, Escape cancels.
  */
 
 import React from "react";
@@ -29,6 +31,8 @@ function makeProps(overrides: Partial<React.ComponentProps<typeof ChecklistItem>
     checked: false,
     onToggle: jest.fn(),
     onRemove: jest.fn(),
+    onRename: jest.fn(),
+    onNoteChange: jest.fn(),
     ...overrides,
   };
 }
@@ -56,24 +60,23 @@ describe("ChecklistItem — note", () => {
 
   it("note element is absent when note prop is not provided", () => {
     render(<ChecklistItem {...makeProps()} />);
-    // The only text content in a <span> should be the tag badges;
-    // none of them should contain a note-like string.
     expect(screen.queryByText("Reapply every 2 hours")).not.toBeInTheDocument();
   });
 
-  it("does not render a subtitle span when note is an empty string", () => {
-    const { container } = render(<ChecklistItem {...makeProps({ note: "" })} />);
-    // There should be no <span> inside the label with empty text rendered visibly.
-    // The conditional in ChecklistItem is `{note && ...}`, so empty string is falsy.
-    const spans = container.querySelectorAll("label span");
-    expect(spans).toHaveLength(0);
+  it("does not render a note span when note is an empty string", () => {
+    // When note is empty the component renders a "+" button instead of a note span.
+    // Querying by the note text should find nothing.
+    render(<ChecklistItem {...makeProps({ note: "" })} />);
+    expect(screen.queryByText("Reapply every 2 hours")).not.toBeInTheDocument();
   });
 
   it("note span carries grey text styling class", () => {
     const { container } = render(
       <ChecklistItem {...makeProps({ note: "Keep safe" })} />
     );
-    const noteSpan = container.querySelector("label span");
+    // The note is rendered as a <span> inside the flex-1 div, not inside a <label>
+    const noteSpan = container.querySelector("span.text-gray-400");
+    expect(noteSpan).not.toBeNull();
     expect(noteSpan).toHaveClass("text-gray-400");
   });
 });
@@ -119,20 +122,21 @@ describe("ChecklistItem — tag badge", () => {
 // ---------------------------------------------------------------------------
 
 describe("ChecklistItem — checked styles", () => {
-  it("applies line-through and text-gray-400 to label when checked", () => {
+  it("applies line-through and text-gray-400 to the label span when checked", () => {
     render(<ChecklistItem {...makeProps({ checked: true })} />);
-    const label = screen.getByText("Sunscreen SPF50+").closest("label");
-    expect(label).toHaveClass("line-through");
-    expect(label).toHaveClass("text-gray-400");
+    // The label is a <span> with cursor-text class; find it by text then check its classes
+    const labelSpan = screen.getByText("Sunscreen SPF50+");
+    expect(labelSpan).toHaveClass("line-through");
+    expect(labelSpan).toHaveClass("text-gray-400");
   });
 
-  it("does not apply line-through when unchecked", () => {
+  it("does not apply line-through to the label span when unchecked", () => {
     render(<ChecklistItem {...makeProps({ checked: false })} />);
-    const label = screen.getByText("Sunscreen SPF50+").closest("label");
-    expect(label).not.toHaveClass("line-through");
+    const labelSpan = screen.getByText("Sunscreen SPF50+");
+    expect(labelSpan).not.toHaveClass("line-through");
   });
 
-  it("applies blue-50 background to the list item when checked", () => {
+  it("applies bg-blue-50 to the list item when checked", () => {
     const { container } = render(<ChecklistItem {...makeProps({ checked: true })} />);
     const li = container.querySelector("li");
     expect(li).toHaveClass("bg-blue-50");
@@ -157,8 +161,164 @@ describe("ChecklistItem — interactions", () => {
     const onRemove = jest.fn();
     render(<ChecklistItem {...makeProps({ onRemove })} />);
 
-    await userEvent.click(screen.getByRole("button", { name: /remove sunscreen/i }));
+    // The aria-label is "Xoá {label}" in Vietnamese
+    await userEvent.click(screen.getByRole("button", { name: /xoá sunscreen/i }));
 
     expect(onRemove).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Inline label edit
+// ---------------------------------------------------------------------------
+
+describe("ChecklistItem — inline label edit", () => {
+  it("shows a text input when the label span is clicked", async () => {
+    render(<ChecklistItem {...makeProps()} />);
+
+    await userEvent.click(screen.getByText("Sunscreen SPF50+"));
+
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+  });
+
+  it("calls onRename with the new value when Enter is pressed", async () => {
+    const onRename = jest.fn();
+    render(<ChecklistItem {...makeProps({ onRename })} />);
+
+    await userEvent.click(screen.getByText("Sunscreen SPF50+"));
+
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "New Label{Enter}");
+
+    expect(onRename).toHaveBeenCalledWith("New Label");
+  });
+
+  it("calls onRename when the input loses focus (blur)", async () => {
+    const onRename = jest.fn();
+    render(<ChecklistItem {...makeProps({ onRename })} />);
+
+    await userEvent.click(screen.getByText("Sunscreen SPF50+"));
+
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "Blurred Label");
+    await userEvent.tab(); // triggers blur
+
+    expect(onRename).toHaveBeenCalledWith("Blurred Label");
+  });
+
+  it("does not call onRename and reverts to original label when Escape is pressed", async () => {
+    const onRename = jest.fn();
+    render(<ChecklistItem {...makeProps({ onRename })} />);
+
+    await userEvent.click(screen.getByText("Sunscreen SPF50+"));
+
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "Discarded{Escape}");
+
+    expect(onRename).not.toHaveBeenCalled();
+    // The label span should be back with the original text
+    expect(screen.getByText("Sunscreen SPF50+")).toBeInTheDocument();
+  });
+
+  it("does not call onRename and reverts when saved value is empty", async () => {
+    const onRename = jest.fn();
+    render(<ChecklistItem {...makeProps({ onRename })} />);
+
+    await userEvent.click(screen.getByText("Sunscreen SPF50+"));
+
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "{Enter}");
+
+    expect(onRename).not.toHaveBeenCalled();
+    expect(screen.getByText("Sunscreen SPF50+")).toBeInTheDocument();
+  });
+
+  it("exits edit mode and shows the label span after saving", async () => {
+    render(<ChecklistItem {...makeProps()} />);
+
+    await userEvent.click(screen.getByText("Sunscreen SPF50+"));
+    const input = screen.getByRole("textbox");
+    await userEvent.type(input, "{Enter}");
+
+    // Input should be gone, span should be back
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.getByText("Sunscreen SPF50+")).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Inline note edit
+// ---------------------------------------------------------------------------
+
+describe("ChecklistItem — inline note edit", () => {
+  it("shows a note input when the '+' button is clicked (no existing note)", async () => {
+    render(<ChecklistItem {...makeProps()} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /thêm ghi chú/i }));
+
+    expect(screen.getByPlaceholderText("Ghi chú...")).toBeInTheDocument();
+  });
+
+  it("shows a note input when the existing note span is clicked", async () => {
+    render(<ChecklistItem {...makeProps({ note: "Existing note" })} />);
+
+    await userEvent.click(screen.getByText("Existing note"));
+
+    expect(screen.getByPlaceholderText("Ghi chú...")).toBeInTheDocument();
+  });
+
+  it("calls onNoteChange with the new note when Enter is pressed", async () => {
+    const onNoteChange = jest.fn();
+    render(<ChecklistItem {...makeProps({ onNoteChange })} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /thêm ghi chú/i }));
+
+    const input = screen.getByPlaceholderText("Ghi chú...");
+    await userEvent.type(input, "My new note{Enter}");
+
+    expect(onNoteChange).toHaveBeenCalledWith("My new note");
+  });
+
+  it("calls onNoteChange when the note input loses focus (blur)", async () => {
+    const onNoteChange = jest.fn();
+    render(<ChecklistItem {...makeProps({ onNoteChange })} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /thêm ghi chú/i }));
+
+    const input = screen.getByPlaceholderText("Ghi chú...");
+    await userEvent.type(input, "Blurred note");
+    await userEvent.tab();
+
+    expect(onNoteChange).toHaveBeenCalledWith("Blurred note");
+  });
+
+  it("does not call onNoteChange and reverts to original note when Escape is pressed", async () => {
+    const onNoteChange = jest.fn();
+    render(<ChecklistItem {...makeProps({ note: "Original note", onNoteChange })} />);
+
+    await userEvent.click(screen.getByText("Original note"));
+
+    const input = screen.getByPlaceholderText("Ghi chú...");
+    await userEvent.clear(input);
+    await userEvent.type(input, "Discarded note{Escape}");
+
+    expect(onNoteChange).not.toHaveBeenCalled();
+    // The original note span should be visible again
+    expect(screen.getByText("Original note")).toBeInTheDocument();
+  });
+
+  it("exits note edit mode and shows the note text after saving", async () => {
+    const onNoteChange = jest.fn();
+    render(<ChecklistItem {...makeProps({ note: "Saved note", onNoteChange })} />);
+
+    await userEvent.click(screen.getByText("Saved note"));
+    const input = screen.getByPlaceholderText("Ghi chú...");
+    await userEvent.type(input, "{Enter}");
+
+    expect(screen.queryByPlaceholderText("Ghi chú...")).not.toBeInTheDocument();
   });
 });

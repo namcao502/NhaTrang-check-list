@@ -7,9 +7,13 @@
  * - Does not render an icon element when category.icon is absent.
  * - Renders all items inside the category.
  * - Passes note and tag props down to each ChecklistItem.
- * - Shows "No items yet." placeholder when category has no items.
- * - Collapses and expands the item list when the header button is clicked.
+ * - Shows "Chưa có đồ vật nào." placeholder when category has no items.
+ * - Collapses and expands the item list when the right-side chevron area is clicked.
  * - Calls onToggleItem / onAddItem / onRemoveItem with the correct item id.
+ * - Category rename: click name span opens input, Enter/blur saves, Escape cancels.
+ * - Bulk toggle button: label switches between "Chọn tất cả" and "Bỏ chọn tất cả".
+ * - Bulk toggle button: disabled when category has no items.
+ * - Bulk toggle button: calls onBulkToggle when clicked.
  */
 
 import React from "react";
@@ -49,12 +53,22 @@ const categoryWithoutIcon: Category = {
   items: [{ id: "item-3", label: "Plain item", checked: false }],
 };
 
+const emptyCategory: Category = {
+  id: "cat-empty",
+  name: "Empty Cat",
+  items: [],
+};
+
 function makeProps(overrides: Partial<{
   category: Category;
   visibleItems: Category["items"];
   onToggleItem: (id: string) => void;
-  onAddItem: (label: string) => void;
+  onAddItem: (label: string, tag?: "must" | "opt") => void;
   onRemoveItem: (id: string) => void;
+  onRenameCategory: (newName: string) => void;
+  onBulkToggle: () => void;
+  onRenameItem: (itemId: string, newLabel: string) => void;
+  onNoteChange: (itemId: string, note: string) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
 }> = {}) {
@@ -66,6 +80,10 @@ function makeProps(overrides: Partial<{
     onToggleItem: jest.fn(),
     onAddItem: jest.fn(),
     onRemoveItem: jest.fn(),
+    onRenameCategory: jest.fn(),
+    onBulkToggle: jest.fn(),
+    onRenameItem: jest.fn(),
+    onNoteChange: jest.fn(),
     ...overrides,
   };
 }
@@ -81,12 +99,11 @@ describe("CategorySection — icon", () => {
   });
 
   it("does not render an icon span when category has no icon", () => {
-    render(<CategorySection {...makeProps({ category: categoryWithoutIcon })} />);
-    // The header button text should only contain the category name.
-    const header = screen.getByRole("button", { name: /no icon category/i });
-    // No emoji text node should be present as a sibling of the category name.
-    // We verify by checking that no element matches the typical icon size class.
-    expect(within(header).queryByText(/🏊|📱|👗|🧴|☀️|💊|💳|🎒|👟/)).not.toBeInTheDocument();
+    const { container } = render(
+      <CategorySection {...makeProps({ category: categoryWithoutIcon })} />
+    );
+    // The icon span should not be in the DOM at all
+    expect(container.querySelector("span.flex-shrink-0.text-xl")).not.toBeInTheDocument();
   });
 });
 
@@ -127,22 +144,24 @@ describe("CategorySection — items", () => {
     expect(screen.getAllByText("Nên có").length).toBeGreaterThan(0);
   });
 
-  it("shows 'No items yet.' placeholder when items array is empty", () => {
-    const emptyCategory: Category = { id: "empty", name: "Empty", items: [] };
+  it("shows 'Chưa có đồ vật nào.' placeholder when items array is empty", () => {
     render(<CategorySection {...makeProps({ category: emptyCategory })} />);
-    expect(screen.getByText("No items yet.")).toBeInTheDocument();
+    expect(screen.getByText("Chưa có đồ vật nào.")).toBeInTheDocument();
   });
 });
 
 // ---------------------------------------------------------------------------
 // Collapse / expand
+// The right-side area (chevron + badge) is the collapse trigger.
+// It contains the progress badge text such as "0/2".
 // ---------------------------------------------------------------------------
 
 describe("CategorySection — collapse behaviour", () => {
-  // The header button contains the category name. Use the category name
-  // (not an item label) to avoid ambiguity with the remove buttons.
-  function getHeaderButton() {
-    return screen.getByRole("button", { name: /đồ bơi & lặn/i });
+  // The right-side collapse trigger is identified by the progress badge span.
+  // We click on the badge text node's parent div.
+  function getCollapseTrigger() {
+    // The chevron "▾" character lives in the same right-side div as the badge.
+    return screen.getByText("▾").closest("div")!;
   }
 
   it("shows items by default (expanded)", () => {
@@ -150,16 +169,16 @@ describe("CategorySection — collapse behaviour", () => {
     expect(screen.getByText("Đồ bơi")).toBeVisible();
   });
 
-  it("hides items after clicking the header button", async () => {
+  it("hides items after clicking the collapse trigger", async () => {
     render(<CategorySection {...makeProps()} />);
-    await userEvent.click(getHeaderButton());
+    await userEvent.click(getCollapseTrigger());
     expect(screen.queryByText("Đồ bơi")).not.toBeInTheDocument();
   });
 
-  it("shows items again after a second click on the header button", async () => {
+  it("shows items again after a second click on the collapse trigger", async () => {
     render(<CategorySection {...makeProps()} />);
-    await userEvent.click(getHeaderButton());
-    await userEvent.click(getHeaderButton());
+    await userEvent.click(getCollapseTrigger());
+    await userEvent.click(getCollapseTrigger());
     expect(screen.getByText("Đồ bơi")).toBeInTheDocument();
   });
 });
@@ -183,7 +202,8 @@ describe("CategorySection — callbacks", () => {
     const onRemoveItem = jest.fn();
     render(<CategorySection {...makeProps({ onRemoveItem })} />);
 
-    const removeBtn = screen.getByRole("button", { name: /remove đồ bơi/i });
+    // aria-label is "Xoá {label}" in Vietnamese
+    const removeBtn = screen.getByRole("button", { name: /xoá đồ bơi/i });
     await userEvent.click(removeBtn);
 
     expect(onRemoveItem).toHaveBeenCalledWith("item-1");
@@ -193,11 +213,11 @@ describe("CategorySection — callbacks", () => {
     const onAddItem = jest.fn();
     render(<CategorySection {...makeProps({ onAddItem })} />);
 
-    const input = screen.getByPlaceholderText("Add item...");
+    const input = screen.getByPlaceholderText("Thêm đồ vật...");
     await userEvent.type(input, "New snorkel");
-    await userEvent.click(screen.getByRole("button", { name: /^add$/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^thêm$/i }));
 
-    expect(onAddItem).toHaveBeenCalledWith("New snorkel");
+    expect(onAddItem).toHaveBeenCalledWith("New snorkel", undefined, undefined);
   });
 });
 
@@ -211,13 +231,156 @@ describe("CategorySection — progress counter", () => {
     expect(screen.getByText("0/2")).toBeInTheDocument();
   });
 
-  it("shows 'Done' indicator when all items are checked", () => {
+  it("shows 'Hoàn thành' indicator when all items are checked", () => {
     const allChecked: Category = {
       ...baseCategory,
       items: baseCategory.items.map((i) => ({ ...i, checked: true })),
     };
     render(<CategorySection {...makeProps({ category: allChecked })} />);
-    expect(screen.getByText(/done/i)).toBeInTheDocument();
+    expect(screen.getByText(/hoàn thành/i)).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Category rename (inline)
+// The rename input appears in the header (no placeholder). The add-item
+// input further down has placeholder "Thêm đồ vật...". Use getAllByRole and
+// target the first textbox, which is always the header rename input.
+// ---------------------------------------------------------------------------
+
+describe("CategorySection — category rename", () => {
+  /** Returns the first textbox in the DOM, which is the header rename input. */
+  function getRenameInput() {
+    return screen.getAllByRole("textbox")[0];
+  }
+
+  it("shows a text input in the header when the category name span is clicked", async () => {
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(screen.getByText("Đồ Bơi & Lặn"));
+
+    // At least one textbox must be present; the first is the rename input
+    expect(getRenameInput()).toBeInTheDocument();
+    // Confirm it holds the current category name as initial value
+    expect(getRenameInput()).toHaveValue("Đồ Bơi & Lặn");
+  });
+
+  it("calls onRenameCategory with the new name when Enter is pressed", async () => {
+    const onRenameCategory = jest.fn();
+    render(<CategorySection {...makeProps({ onRenameCategory })} />);
+
+    await userEvent.click(screen.getByText("Đồ Bơi & Lặn"));
+
+    const input = getRenameInput();
+    await userEvent.clear(input);
+    await userEvent.type(input, "New Cat Name{Enter}");
+
+    expect(onRenameCategory).toHaveBeenCalledWith("New Cat Name");
+  });
+
+  it("calls onRenameCategory when the input loses focus (blur)", async () => {
+    const onRenameCategory = jest.fn();
+    render(<CategorySection {...makeProps({ onRenameCategory })} />);
+
+    await userEvent.click(screen.getByText("Đồ Bơi & Lặn"));
+
+    const input = getRenameInput();
+    await userEvent.clear(input);
+    await userEvent.type(input, "Blurred Cat Name");
+    await userEvent.tab();
+
+    expect(onRenameCategory).toHaveBeenCalledWith("Blurred Cat Name");
+  });
+
+  it("does not call onRenameCategory and restores original name when Escape is pressed", async () => {
+    const onRenameCategory = jest.fn();
+    render(<CategorySection {...makeProps({ onRenameCategory })} />);
+
+    await userEvent.click(screen.getByText("Đồ Bơi & Lặn"));
+
+    const input = getRenameInput();
+    await userEvent.clear(input);
+    await userEvent.type(input, "Discarded Name{Escape}");
+
+    expect(onRenameCategory).not.toHaveBeenCalled();
+    // The original name span should be visible again
+    expect(screen.getByText("Đồ Bơi & Lặn")).toBeInTheDocument();
+  });
+
+  it("does not call onRenameCategory when saved value is empty", async () => {
+    const onRenameCategory = jest.fn();
+    render(<CategorySection {...makeProps({ onRenameCategory })} />);
+
+    await userEvent.click(screen.getByText("Đồ Bơi & Lặn"));
+
+    const input = getRenameInput();
+    await userEvent.clear(input);
+    await userEvent.type(input, "{Enter}");
+
+    expect(onRenameCategory).not.toHaveBeenCalled();
+    // Reverts to original name span
+    expect(screen.getByText("Đồ Bơi & Lặn")).toBeInTheDocument();
+  });
+
+  it("exits edit mode after saving (rename input is no longer the first textbox's value)", async () => {
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(screen.getByText("Đồ Bơi & Lặn"));
+    const input = getRenameInput();
+    await userEvent.type(input, "{Enter}");
+
+    // After saving, the category name span is back; clicking it again opens a fresh input
+    expect(screen.getByText("Đồ Bơi & Lặn")).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Bulk toggle button
+// ---------------------------------------------------------------------------
+
+describe("CategorySection — bulk toggle button", () => {
+  it("shows 'Chọn tất cả' when not all items are checked", () => {
+    render(<CategorySection {...makeProps()} />);
+    expect(screen.getByRole("button", { name: "Chọn tất cả" })).toBeInTheDocument();
+  });
+
+  it("shows 'Bỏ chọn tất cả' when all items are checked", () => {
+    const allChecked: Category = {
+      ...baseCategory,
+      items: baseCategory.items.map((i) => ({ ...i, checked: true })),
+    };
+    render(<CategorySection {...makeProps({ category: allChecked })} />);
+    expect(screen.getByRole("button", { name: "Bỏ chọn tất cả" })).toBeInTheDocument();
+  });
+
+  it("is disabled when the category has no items", () => {
+    render(<CategorySection {...makeProps({ category: emptyCategory })} />);
+    const btn = screen.getByRole("button", { name: "Chọn tất cả" });
+    expect(btn).toBeDisabled();
+  });
+
+  it("is not disabled when the category has items", () => {
+    render(<CategorySection {...makeProps()} />);
+    const btn = screen.getByRole("button", { name: "Chọn tất cả" });
+    expect(btn).not.toBeDisabled();
+  });
+
+  it("calls onBulkToggle when the button is clicked", async () => {
+    const onBulkToggle = jest.fn();
+    render(<CategorySection {...makeProps({ onBulkToggle })} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Chọn tất cả" }));
+
+    expect(onBulkToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not collapse the section when the bulk toggle button is clicked", async () => {
+    render(<CategorySection {...makeProps()} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Chọn tất cả" }));
+
+    // Items should still be visible — the click should not have propagated to the collapse div
+    expect(screen.getByText("Đồ bơi")).toBeInTheDocument();
   });
 });
 
@@ -237,9 +400,9 @@ describe("CategorySection — visibleItems", () => {
     expect(screen.queryByText("Đồ bơi")).not.toBeInTheDocument();
   });
 
-  it("shows 'No items yet.' placeholder when visibleItems is an empty array", () => {
+  it("shows 'Chưa có đồ vật nào.' placeholder when visibleItems is an empty array", () => {
     render(<CategorySection {...makeProps({ visibleItems: [] })} />);
-    expect(screen.getByText("No items yet.")).toBeInTheDocument();
+    expect(screen.getByText("Chưa có đồ vật nào.")).toBeInTheDocument();
   });
 
   it("badge counter still reflects the full category.items count, not visibleItems", () => {

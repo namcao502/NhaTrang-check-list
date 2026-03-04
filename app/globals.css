@@ -5,6 +5,8 @@
 body {
   background: linear-gradient(160deg, #caf0f8 0%, #90e0ef 30%, #0077b6 100%);
   min-height: 100vh;
+  touch-action: manipulation;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .glass-card {
