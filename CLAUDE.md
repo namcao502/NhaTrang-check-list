@@ -31,6 +31,7 @@ All state lives client-side; there is no backend or API layer.
 | `components/AddItemForm.tsx` | Inline form inside a category to add new items |
 | `components/AddCategoryForm.tsx` | Button/form to append a new category |
 | `components/ChecklistStats.tsx` | Progress bar + packed count + reset button |
+| `components/FilterBar.tsx` | Search input + "Chi quan trong" must-only toggle + "An da xong" hide-checked toggle (glass-card, `'use client'`) |
 
 ### State shape
 
@@ -43,7 +44,16 @@ Category[]  // stored in localStorage under "beach-checklist"
 Default data (`lib/defaultData.ts`) contains 9 Vietnamese Nha Trang categories:
 `Đồ Bơi & Lặn`, `Trang Phục`, `Giày Dép`, `Vệ Sinh Cá Nhân`, `Chống Nắng & Biển`, `Thuốc & Sức Khoẻ`, `Điện Tử & Tiện Ích`, `Giấy Tờ & Tài Chính`, `Đồ Lặt Vặt Tiện Ích`.
 
-`useChecklist` exposes: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `resetAll`, plus derived `totalItems` / `checkedItems`.
+`useChecklist` exposes: `toggleItem`, `addItem`, `removeItem`, `addCategory`, `resetAll`, `moveCategory(id, 'up'|'down')`, plus derived `totalItems` / `checkedItems`.
+
+### Filter / visibility pattern
+
+Filter state (`searchQuery`, `mustOnly`, `hideChecked`) lives in `app/page.tsx` and is derived into a `visibleCategories` array before rendering. Each `CategorySection` receives:
+
+- `visibleItems: Item[]` — the already-filtered subset to render (never the raw `category.items`).
+- `category.items` is still used inside the component for badge counts so totals remain accurate regardless of active filters.
+- Categories whose `visibleItems` is empty are omitted from the rendered list entirely.
+- All three filters compose simultaneously (search AND must-only AND hide-checked).
 
 ### Tailwind theme
 
