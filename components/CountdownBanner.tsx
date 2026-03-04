@@ -36,7 +36,7 @@ export default function CountdownBanner() {
           type="date"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className="rounded-xl border border-ocean-300 dark:border-ocean-600 bg-white/80 dark:bg-slate-700/80 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-ocean-300 transition"
+          className="rounded-xl border border-ocean-300 dark:border-ocean-600 bg-white/80 dark:bg-slate-700/80 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-ocean-300 dark:focus:ring-ocean-500 transition"
         />
         <button
           type="button"
@@ -62,7 +62,7 @@ export default function CountdownBanner() {
         <button
           type="button"
           onClick={handleOpen}
-          className="rounded-full bg-ocean-100 text-ocean-700 dark:bg-ocean-900/40 dark:text-ocean-300 text-sm font-medium px-4 py-1.5 hover:bg-ocean-200 dark:hover:bg-ocean-900/60 transition"
+          className="rounded-full bg-ocean-100 text-ocean-700 dark:bg-ocean-700/40 dark:text-ocean-300 text-sm font-medium px-4 py-1.5 hover:bg-ocean-200 dark:hover:bg-ocean-700/60 transition"
         >
           Đặt ngày đi
         </button>
@@ -81,7 +81,7 @@ export default function CountdownBanner() {
 
   return (
     <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
-      <span className="rounded-full bg-ocean-100 text-ocean-700 dark:bg-ocean-900/40 dark:text-ocean-300 text-sm font-medium px-4 py-1.5">
+      <span className="rounded-full bg-ocean-100 text-ocean-700 dark:bg-ocean-700/40 dark:text-ocean-300 text-sm font-medium px-4 py-1.5">
         {message}
       </span>
       <button
@@ -94,7 +94,7 @@ export default function CountdownBanner() {
       <button
         type="button"
         onClick={handleClear}
-        className="text-xs text-gray-400 dark:text-gray-500 underline underline-offset-2 hover:text-gray-600 dark:hover:text-gray-300 transition"
+        className="text-xs text-gray-400 dark:text-gray-400 underline underline-offset-2 hover:text-gray-600 dark:hover:text-gray-300 transition"
       >
         Xoá
       </button>

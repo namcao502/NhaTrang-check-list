@@ -6,9 +6,16 @@ const DEPARTURE_KEY = "beach-departure";
 export function useCountdown() {
   const [departureDate, setDepartureDateState] = useState<string | null>(null);
 
+  const DEFAULT_DEPARTURE = "2026-03-13";
+
   useEffect(() => {
     const stored = localStorage.getItem(DEPARTURE_KEY);
-    if (stored) setDepartureDateState(stored);
+    if (stored) {
+      setDepartureDateState(stored);
+    } else {
+      setDepartureDateState(DEFAULT_DEPARTURE);
+      localStorage.setItem(DEPARTURE_KEY, DEFAULT_DEPARTURE);
+    }
   }, []);
 
   function setDeparture(date: string) {

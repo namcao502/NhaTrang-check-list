@@ -58,7 +58,7 @@ export default function Home() {
 
   if (!loaded) {
     return (
-      <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400 dark:text-gray-500">
+      <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400 dark:text-gray-400">
         Đang tải...
       </main>
     );
@@ -100,7 +100,7 @@ export default function Home() {
           <div className="absolute top-0 right-0">
             <ThemeToggle />
           </div>
-          <div className="inline-block bg-coral-100 text-coral-600 dark:bg-coral-600/20 dark:text-coral-500 text-sm font-medium px-4 py-1.5 rounded-full mb-3">
+          <div className="inline-block bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 text-sm font-medium px-4 py-1.5 rounded-full mb-3">
             ✈️ Kế hoạch chuyến đi
           </div>
           <h1 className="text-4xl font-bold font-playfair text-gray-900 dark:text-gray-100 mb-2">
@@ -111,7 +111,7 @@ export default function Home() {
         </header>
 
         {allDone && (
-          <div className="mb-4 text-center bg-green-50 border border-green-200 dark:bg-green-900/30 dark:border-green-800 rounded-2xl px-5 py-4 text-green-700 dark:text-green-300 font-medium">
+          <div className="mb-4 text-center bg-green-50 border border-green-200 dark:bg-green-900/40 dark:border-green-800 rounded-2xl px-5 py-4 text-green-700 dark:text-green-200 font-medium">
             🎉 Đã chuẩn bị xong! Chúc cả gia đình có chuyến đi tuyệt vời! 🌊
           </div>
         )}

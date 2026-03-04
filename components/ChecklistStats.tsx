@@ -18,7 +18,7 @@ export default function ChecklistStats({ checked, total, onReset }: Props) {
         </span>
         <button
           onClick={onReset}
-          className="text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors"
+          className="text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
         >
           Đặt lại
         </button>
@@ -32,7 +32,7 @@ export default function ChecklistStats({ checked, total, onReset }: Props) {
           }}
         />
       </div>
-      <p className="text-right text-sm text-gray-400 dark:text-gray-500 mt-1">{percent}%</p>
+      <p className="text-right text-sm text-gray-400 dark:text-gray-400 mt-1">{percent}%</p>
     </div>
   );
 }

@@ -67,7 +67,7 @@ export default function ExportButton({ categories }: Props) {
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 glass-card rounded-full shadow border border-white/40 dark:border-white/10 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:bg-ocean-900/30 transition-colors"
+          className="flex-1 glass-card rounded-full shadow border border-white/40 dark:border-white/10 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:bg-ocean-700/30 transition-colors"
         >
           {copied ? "✓ Đã sao chép!" : "📋 Sao chép danh sách"}
         </button>
@@ -75,7 +75,7 @@ export default function ExportButton({ categories }: Props) {
           <button
             type="button"
             onClick={handleShare}
-            className="glass-card rounded-full shadow border border-white/40 dark:border-white/10 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:bg-ocean-900/30 transition-colors"
+            className="glass-card rounded-full shadow border border-white/40 dark:border-white/10 px-4 py-2 text-sm font-medium text-ocean-600 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:bg-ocean-700/30 transition-colors"
           >
             {shared ? "✓ Đã chia sẻ!" : "📤 Chia sẻ"}
           </button>
@@ -87,7 +87,7 @@ export default function ExportButton({ categories }: Props) {
           readOnly
           value={fallbackText}
           rows={8}
-          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-slate-700/80 px-3 py-2 text-xs text-gray-700 dark:text-gray-300 font-mono focus:outline-none focus:ring-2 focus:ring-ocean-300 resize-none"
+          className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-slate-700/80 px-3 py-2 text-xs text-gray-700 dark:text-gray-300 font-mono focus:outline-none focus:ring-2 focus:ring-ocean-300 dark:focus:ring-ocean-500 resize-none"
         />
       )}
     </div>

@@ -117,7 +117,7 @@ export default function CategorySection({
           {editingName ? (
             <input
               autoFocus
-              className="text-xl font-semibold border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
+              className="text-xl font-semibold border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:focus:ring-ocean-500 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
               value={nameDraft}
               onChange={(e) => setNameDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -162,18 +162,18 @@ export default function CategorySection({
               e.stopPropagation();
               onBulkToggle();
             }}
-            className="text-sm sm:text-xs px-2 py-1 text-ocean-600 hover:text-ocean-800 dark:text-ocean-400 dark:hover:text-ocean-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="text-sm sm:text-xs px-2 py-1 text-ocean-600 hover:text-ocean-700 dark:text-ocean-400 dark:hover:text-ocean-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {allDone ? "Bỏ chọn tất cả" : "Chọn tất cả"}
           </button>
-          <span className="bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300 rounded-full px-2 py-0.5 text-xs">
+          <span className="bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-200 rounded-full px-2 py-0.5 text-xs">
             {checked}/{total}
           </span>
           {onMoveUp && (
             <button
               aria-label="Di chuyển lên"
               onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-              className="text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 text-sm px-1 leading-none"
+              className="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm px-1 leading-none"
             >
               ↑
             </button>
@@ -182,7 +182,7 @@ export default function CategorySection({
             <button
               aria-label="Di chuyển xuống"
               onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-              className="text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 text-sm px-1 leading-none"
+              className="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm px-1 leading-none"
             >
               ↓
             </button>
@@ -190,11 +190,11 @@ export default function CategorySection({
           <button
             aria-label={`Xoá danh mục ${category.name}`}
             onClick={(e) => { e.stopPropagation(); handleDeleteCategory(); }}
-            className="text-gray-300 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-lg px-1 leading-none transition-colors"
+            className="text-gray-300 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 text-lg px-1 leading-none transition-colors"
           >
             ×
           </button>
-          <span className={`text-gray-400 dark:text-gray-500 transition-transform ${collapsed ? "-rotate-90" : ""}`}>
+          <span className={`text-gray-400 dark:text-gray-400 transition-transform ${collapsed ? "-rotate-90" : ""}`}>
             ▾
           </span>
         </div>
@@ -203,7 +203,7 @@ export default function CategorySection({
       {!collapsed && (
         <div className="px-3 sm:px-4 pb-5">
           {visibleItems.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500 px-3 py-2">Chưa có đồ vật nào.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400 px-3 py-2">Chưa có đồ vật nào.</p>
           ) : (
             <ul>
               {visibleItems.map((item) => (

@@ -28,12 +28,12 @@ export default function AddItemForm({ onAdd }: Props) {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Thêm đồ vật..."
-          className="flex-1 text-base border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-ocean-400 focus:border-transparent"
+          className="flex-1 text-base border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-ocean-400 dark:focus:ring-ocean-500 focus:border-transparent"
         />
         <button
           type="submit"
           disabled={!value.trim()}
-          className="text-base px-4 py-3 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="text-base px-4 py-3 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Thêm
         </button>
@@ -43,7 +43,7 @@ export default function AddItemForm({ onAdd }: Props) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="Mô tả (tuỳ chọn)..."
-        className="text-base border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-300 dark:placeholder-gray-500 rounded-lg px-3 py-3 text-gray-500 focus:outline-none focus:ring-2 focus:ring-ocean-400 focus:border-transparent"
+        className="text-base border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg px-3 py-3 text-gray-500 focus:outline-none focus:ring-2 focus:ring-ocean-400 dark:focus:ring-ocean-500 focus:border-transparent"
       />
       <div className="flex gap-2 flex-wrap">
         <button
@@ -52,7 +52,7 @@ export default function AddItemForm({ onAdd }: Props) {
           className={`text-sm px-3 py-2 rounded-full border transition-colors ${
             tag === "must"
               ? "bg-coral-500 text-white border-coral-500"
-              : "bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-coral-300 hover:text-coral-500 dark:hover:border-coral-500 dark:hover:text-coral-400"
+              : "bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-coral-300 hover:text-coral-500 dark:hover:border-coral-500 dark:hover:text-coral-500"
           }`}
         >
           Quan trọng
@@ -72,7 +72,7 @@ export default function AddItemForm({ onAdd }: Props) {
           <button
             type="button"
             onClick={() => setTag(undefined)}
-            className="text-sm px-3 py-2 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-sm px-3 py-2 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             Không
           </button>
