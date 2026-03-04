@@ -46,10 +46,10 @@ export function useChecklist() {
     );
   }
 
-  function addItem(categoryId: string, label: string) {
+  function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string) {
     const trimmed = label.trim();
     if (!trimmed) return;
-    const newItem: Item = { id: generateId(), label: trimmed, checked: false };
+    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}) };
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId ? cat : { ...cat, items: [...cat.items, newItem] }
@@ -76,8 +76,82 @@ export function useChecklist() {
     ]);
   }
 
+  function renameItem(categoryId: string, itemId: string, newLabel: string) {
+    const trimmed = newLabel.trim();
+    if (!trimmed) return;
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id !== categoryId
+          ? cat
+          : {
+              ...cat,
+              items: cat.items.map((item) =>
+                item.id !== itemId ? item : { ...item, label: trimmed }
+              ),
+            }
+      )
+    );
+  }
+
+  function updateNote(categoryId: string, itemId: string, note: string) {
+    const trimmed = note.trim();
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id !== categoryId
+          ? cat
+          : {
+              ...cat,
+              items: cat.items.map((item) => {
+                if (item.id !== itemId) return item;
+                if (!trimmed) {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { note: _removed, ...rest } = item;
+                  return rest;
+                }
+                return { ...item, note: trimmed };
+              }),
+            }
+      )
+    );
+  }
+
+  function renameCategory(categoryId: string, newName: string) {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id !== categoryId ? cat : { ...cat, name: trimmed }
+      )
+    );
+  }
+
+  function bulkToggleCategory(categoryId: string) {
+    setCategories((prev) =>
+      prev.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        const allChecked = cat.items.length > 0 && cat.items.every((i) => i.checked);
+        return {
+          ...cat,
+          items: cat.items.map((item) => ({ ...item, checked: !allChecked })),
+        };
+      })
+    );
+  }
+
   function resetAll() {
     setCategories(DEFAULT_CATEGORIES);
+  }
+
+  function moveCategory(categoryId: string, direction: 'up' | 'down') {
+    setCategories((prev) => {
+      const idx = prev.findIndex((c) => c.id === categoryId);
+      if (idx === -1) return prev;
+      const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= prev.length) return prev;
+      const next = [...prev];
+      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+      return next;
+    });
   }
 
   const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
@@ -95,6 +169,11 @@ export function useChecklist() {
     addItem,
     removeItem,
     addCategory,
+    renameItem,
+    updateNote,
+    renameCategory,
+    bulkToggleCategory,
     resetAll,
+    moveCategory,
   };
 }
