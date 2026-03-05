@@ -52,11 +52,11 @@ export function useChecklist() {
     );
   }
 
-  function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string) {
+  function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string, qty?: number) {
     const trimmed = label.trim();
     if (!trimmed) return;
     pushUndo();
-    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}) };
+    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}), ...(qty && qty > 1 ? { qty } : {}) };
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId ? cat : { ...cat, items: [...cat.items, newItem] }
@@ -131,6 +131,32 @@ export function useChecklist() {
     );
   }
 
+  function updateQty(categoryId: string, itemId: string, qty: number) {
+    const cat = categories.find((c) => c.id === categoryId);
+    const item = cat?.items.find((i) => i.id === itemId);
+    const currentQty = item?.qty ?? 1;
+    if (qty === currentQty) return;
+    pushUndo();
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id !== categoryId
+          ? cat
+          : {
+              ...cat,
+              items: cat.items.map((item) => {
+                if (item.id !== itemId) return item;
+                if (qty <= 1) {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { qty: _removed, ...rest } = item;
+                  return rest;
+                }
+                return { ...item, qty };
+              }),
+            }
+      )
+    );
+  }
+
   function renameCategory(categoryId: string, newName: string) {
     const trimmed = newName.trim();
     if (!trimmed) return;
@@ -178,6 +204,22 @@ export function useChecklist() {
     });
   }
 
+  function moveItem(categoryId: string, itemId: string, direction: 'up' | 'down') {
+    pushUndo();
+    setCategories((prev) =>
+      prev.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        const idx = cat.items.findIndex((i) => i.id === itemId);
+        if (idx === -1) return cat;
+        const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= cat.items.length) return cat;
+        const next = [...cat.items];
+        [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+        return { ...cat, items: next };
+      })
+    );
+  }
+
   function undo() {
     setUndoStack((prev) => {
       if (prev.length === 0) return prev;
@@ -208,10 +250,12 @@ export function useChecklist() {
     removeCategory,
     renameItem,
     updateNote,
+    updateQty,
     renameCategory,
     bulkToggleCategory,
     resetAll,
     moveCategory,
+    moveItem,
     undo,
     canUndo,
   };
