@@ -169,7 +169,7 @@ export default function ChecklistItem({
       <button
         onClick={onRemove}
         aria-label={`Xoá ${label}`}
-        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 text-xl p-1 leading-none flex-shrink-0"
+        className="print-hide opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 text-xl p-1 leading-none flex-shrink-0"
       >
         ×
       </button>

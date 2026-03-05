@@ -162,7 +162,7 @@ export default function CategorySection({
               e.stopPropagation();
               onBulkToggle();
             }}
-            className="text-sm sm:text-xs px-2 py-1 text-ocean-600 hover:text-ocean-700 dark:text-ocean-400 dark:hover:text-ocean-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="print-hide text-sm sm:text-xs px-2 py-1 text-ocean-600 hover:text-ocean-700 dark:text-ocean-400 dark:hover:text-ocean-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {allDone ? "Bỏ chọn tất cả" : "Chọn tất cả"}
           </button>
@@ -173,7 +173,7 @@ export default function CategorySection({
             <button
               aria-label="Di chuyển lên"
               onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-              className="w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
+              className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
             >
               ↑
             </button>
@@ -182,7 +182,7 @@ export default function CategorySection({
             <button
               aria-label="Di chuyển xuống"
               onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-              className="w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
+              className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
             >
               ↓
             </button>
@@ -190,11 +190,11 @@ export default function CategorySection({
           <button
             aria-label={`Xoá danh mục ${category.name}`}
             onClick={(e) => { e.stopPropagation(); handleDeleteCategory(); }}
-            className="w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-300 hover:text-red-500 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+            className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-300 hover:text-red-500 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors"
           >
             ×
           </button>
-          <button className={`w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-all ${collapsed ? "-rotate-90" : ""}`}>
+          <button className={`print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-all ${collapsed ? "-rotate-90" : ""}`}>
             ▾
           </button>
         </div>
@@ -222,7 +222,9 @@ export default function CategorySection({
               ))}
             </ul>
           )}
-          <AddItemForm onAdd={(label, tag, note) => onAddItem(label, tag, note)} />
+          <div className="print-hide">
+            <AddItemForm onAdd={(label, tag, note) => onAddItem(label, tag, note)} />
+          </div>
         </div>
       )}
     </section>

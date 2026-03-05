@@ -1,5 +1,7 @@
 "use client";
 
+import { forwardRef } from "react";
+
 interface Props {
   searchQuery: string;
   onSearchChange: (q: string) => void;
@@ -9,17 +11,14 @@ interface Props {
   onHideCheckedChange: (v: boolean) => void;
 }
 
-export default function FilterBar({
-  searchQuery,
-  onSearchChange,
-  mustOnly,
-  onMustOnlyChange,
-  hideChecked,
-  onHideCheckedChange,
-}: Props) {
+const FilterBar = forwardRef<HTMLInputElement, Props>(function FilterBar(
+  { searchQuery, onSearchChange, mustOnly, onMustOnlyChange, hideChecked, onHideCheckedChange },
+  ref
+) {
   return (
     <div className="glass-card rounded-2xl shadow-lg border border-white/40 dark:border-white/10 px-5 py-4 flex flex-col gap-3">
       <input
+        ref={ref}
         type="text"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
@@ -52,4 +51,6 @@ export default function FilterBar({
       </div>
     </div>
   );
-}
+});
+
+export default FilterBar;

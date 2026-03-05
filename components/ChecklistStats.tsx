@@ -18,7 +18,7 @@ export default function ChecklistStats({ checked, total, onReset }: Props) {
         </span>
         <button
           onClick={onReset}
-          className="text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+          className="print-hide text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
         >
           Đặt lại
         </button>
