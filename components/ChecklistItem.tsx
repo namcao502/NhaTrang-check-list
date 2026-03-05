@@ -88,7 +88,7 @@ export default function ChecklistItem({
       />
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2 flex-wrap">
+        <div className="flex items-baseline gap-2">
           {editingLabel ? (
             <input
               autoFocus
@@ -116,16 +116,6 @@ export default function ChecklistItem({
               }}
             >
               {label}
-            </span>
-          )}
-          {tag === "must" && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap">
-              Quan trọng
-            </span>
-          )}
-          {tag === "opt" && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap">
-              Nên có
             </span>
           )}
         </div>
@@ -171,6 +161,17 @@ export default function ChecklistItem({
           </button>
         )}
       </div>
+
+      {tag === "must" && (
+        <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap flex-shrink-0">
+          Quan trọng
+        </span>
+      )}
+      {tag === "opt" && (
+        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap flex-shrink-0">
+          Nên có
+        </span>
+      )}
 
       {onMoveUp && (
         <button
