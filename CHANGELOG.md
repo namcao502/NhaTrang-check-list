@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-tag-order] - 2026-03-05
+### Changed
+- Reordered tag badge position in `ChecklistItem` — tag badges now appear after move up/down buttons and before the delete button. New DOM order: checkbox, label, move up, move down, tag, delete.
+
+---
+
 ## [FEAT-tag-right] - 2026-03-05
 ### Changed
 - Moved tag badges (`Quan trong` / `Nen co`) from inside the label wrapper to be direct children of the `<li>`, positioned between the `flex-1` content div and the move/delete buttons. Badges are right-aligned with `flex-shrink-0` and `whitespace-nowrap`, forming a consistent vertical column.

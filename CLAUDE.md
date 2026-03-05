@@ -27,7 +27,7 @@ All state lives client-side; there is no backend or API layer.
 | `lib/useChecklist.ts` | Custom hook — all state logic + localStorage persistence |
 | `app/page.tsx` | Root page, composes all components |
 | `components/CategorySection.tsx` | Collapsible category (chevron-only trigger) with inline category rename, bulk-toggle button, item list, and add-item form |
-| `components/ChecklistItem.tsx` | Single item row with checkbox, inline label rename, tag badge (direct child of `<li>`, right-aligned between content and action buttons), inline note editor, and delete button |
+| `components/ChecklistItem.tsx` | Single item row with checkbox, inline label rename (with tag badge inline in a `flex items-baseline` wrapper), inline note editor, move up/down buttons, tag badge, and delete button |
 | `components/AddItemForm.tsx` | Inline form inside a category to add new items |
 | `components/AddCategoryForm.tsx` | Button/form to append a new category |
 | `components/ChecklistStats.tsx` | Progress bar + packed count + reset button |
