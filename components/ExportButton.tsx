@@ -14,8 +14,7 @@ function buildExportText(categories: Category[]): string {
     lines.push("");
     lines.push(`📦 ${cat.name}`);
     for (const item of cat.items) {
-      const qtyStr = (item.qty ?? 0) > 1 ? ` (\u00d7${item.qty})` : '';
-      lines.push(`  ${item.checked ? "✅" : "⬜"} ${item.label}${qtyStr}`);
+      lines.push(`  ${item.checked ? "✅" : "⬜"} ${item.label}`);
     }
   }
   return lines.join("\n");

@@ -29,14 +29,13 @@ interface Props {
   category: Category;
   visibleItems: Item[];
   onToggleItem: (itemId: string) => void;
-  onAddItem: (label: string, tag?: "must" | "opt", note?: string, qty?: number) => void;
+  onAddItem: (label: string, tag?: "must" | "opt", note?: string) => void;
   onRemoveItem: (itemId: string) => void;
   onRemoveCategory: () => void;
   onRenameCategory: (newName: string) => void;
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
-  onQtyChange: (itemId: string, qty: number) => void;
   onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
   onUpdateIcon: (icon: string) => void;
   onMoveUp?: () => void;
@@ -54,7 +53,6 @@ export default function CategorySection({
   onBulkToggle,
   onRenameItem,
   onNoteChange,
-  onQtyChange,
   onMoveItem,
   onUpdateIcon,
   onMoveUp,
@@ -236,12 +234,10 @@ export default function CategorySection({
                     checked={item.checked}
                     note={item.note}
                     tag={item.tag}
-                    qty={item.qty}
                     onToggle={() => onToggleItem(item.id)}
                     onRemove={() => onRemoveItem(item.id)}
                     onRename={(newLabel) => onRenameItem(item.id, newLabel)}
                     onNoteChange={(note) => onNoteChange(item.id, note)}
-                    onQtyChange={(qty) => onQtyChange(item.id, qty)}
                     onMoveUp={origIdx > 0 ? () => onMoveItem(item.id, 'up') : undefined}
                     onMoveDown={origIdx < category.items.length - 1 ? () => onMoveItem(item.id, 'down') : undefined}
                   />
@@ -250,7 +246,7 @@ export default function CategorySection({
             </ul>
           )}
           <div className="print-hide">
-            <AddItemForm onAdd={(label, tag, note, qty) => onAddItem(label, tag, note, qty)} />
+            <AddItemForm onAdd={(label, tag, note) => onAddItem(label, tag, note)} />
           </div>
         </div>
       )}

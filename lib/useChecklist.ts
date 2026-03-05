@@ -52,11 +52,11 @@ export function useChecklist() {
     );
   }
 
-  function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string, qty?: number) {
+  function addItem(categoryId: string, label: string, tag?: "must" | "opt", note?: string) {
     const trimmed = label.trim();
     if (!trimmed) return;
     pushUndo();
-    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}), ...(qty && qty > 1 ? { qty } : {}) };
+    const newItem: Item = { id: generateId(), label: trimmed, checked: false, ...(tag ? { tag } : {}), ...(note?.trim() ? { note: note.trim() } : {}) };
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id !== categoryId ? cat : { ...cat, items: [...cat.items, newItem] }
@@ -125,32 +125,6 @@ export function useChecklist() {
                   return rest;
                 }
                 return { ...item, note: trimmed };
-              }),
-            }
-      )
-    );
-  }
-
-  function updateQty(categoryId: string, itemId: string, qty: number) {
-    const cat = categories.find((c) => c.id === categoryId);
-    const item = cat?.items.find((i) => i.id === itemId);
-    const currentQty = item?.qty ?? 1;
-    if (qty === currentQty) return;
-    pushUndo();
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id !== categoryId
-          ? cat
-          : {
-              ...cat,
-              items: cat.items.map((item) => {
-                if (item.id !== itemId) return item;
-                if (qty <= 1) {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  const { qty: _removed, ...rest } = item;
-                  return rest;
-                }
-                return { ...item, qty };
               }),
             }
       )
@@ -270,7 +244,6 @@ export function useChecklist() {
     removeCategory,
     renameItem,
     updateNote,
-    updateQty,
     renameCategory,
     bulkToggleCategory,
     resetAll,

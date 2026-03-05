@@ -85,14 +85,13 @@ function makeProps(overrides: Partial<{
   category: Category;
   visibleItems: Category["items"];
   onToggleItem: (id: string) => void;
-  onAddItem: (label: string, tag?: "must" | "opt", note?: string, qty?: number) => void;
+  onAddItem: (label: string, tag?: "must" | "opt", note?: string) => void;
   onRemoveItem: (id: string) => void;
   onRemoveCategory: () => void;
   onRenameCategory: (newName: string) => void;
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
-  onQtyChange: (itemId: string, qty: number) => void;
   onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
   onUpdateIcon: (icon: string) => void;
   onMoveUp: () => void;
@@ -111,7 +110,6 @@ function makeProps(overrides: Partial<{
     onBulkToggle: jest.fn(),
     onRenameItem: jest.fn(),
     onNoteChange: jest.fn(),
-    onQtyChange: jest.fn(),
     onMoveItem: jest.fn(),
     onUpdateIcon: jest.fn(),
     ...overrides,
@@ -247,7 +245,7 @@ describe("CategorySection — callbacks", () => {
     await userEvent.type(input, "New snorkel");
     await userEvent.click(screen.getByRole("button", { name: /^thêm$/i }));
 
-    expect(onAddItem).toHaveBeenCalledWith("New snorkel", undefined, undefined, undefined);
+    expect(onAddItem).toHaveBeenCalledWith("New snorkel", undefined, undefined);
   });
 });
 

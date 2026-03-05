@@ -34,7 +34,6 @@ export default function Home() {
     updateCategoryIcon,
     moveCategory,
     moveItem,
-    updateQty,
     undo,
     canUndo,
   } = useChecklist();
@@ -210,14 +209,13 @@ export default function Home() {
                 category={cat}
                 visibleItems={visibleItems}
                 onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
-                onAddItem={(label, tag, note, qty) => addItem(cat.id, label, tag, note, qty)}
+                onAddItem={(label, tag, note) => addItem(cat.id, label, tag, note)}
                 onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
                 onRemoveCategory={() => removeCategory(cat.id)}
                 onRenameCategory={(newName) => renameCategory(cat.id, newName)}
                 onBulkToggle={() => bulkToggleCategory(cat.id)}
                 onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}
                 onNoteChange={(itemId, note) => updateNote(cat.id, itemId, note)}
-                onQtyChange={(itemId, qty) => updateQty(cat.id, itemId, qty)}
                 onMoveItem={(itemId, direction) => moveItem(cat.id, itemId, direction)}
                 onUpdateIcon={(icon) => updateCategoryIcon(cat.id, icon)}
                 onMoveUp={origIdx > 0 ? () => moveCategory(cat.id, 'up') : undefined}
