@@ -11,6 +11,7 @@ import ExportButton from "@/components/ExportButton";
 import PrintButton from "@/components/PrintButton";
 import UndoButton from "@/components/UndoButton";
 import ThemeToggle from "@/components/ThemeToggle";
+import AmbientFireworks from "@/components/AmbientFireworks";
 import { useTemplates } from "@/lib/useTemplates";
 import TemplateManager from "@/components/TemplateManager";
 
@@ -134,6 +135,8 @@ export default function Home() {
 
   return (
     <>
+      <AmbientFireworks />
+
       {/* Animated wave bar */}
       <div
         className="print-hide fixed top-0 left-0 w-full h-2 z-50 animate-wave-shift"
