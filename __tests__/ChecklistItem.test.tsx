@@ -8,8 +8,8 @@
  * - Renders "Quan trọng" badge (coral) when tag === 'must'.
  * - Renders "Nên có" badge (purple) when tag === 'opt'.
  * - Renders no badge when tag is undefined.
- * - Tag badge DOM structure: badge is a sibling of the label span inside a shared flex wrapper.
- * - Action buttons (delete, move) remain outside the label+badge wrapper.
+ * - Tag badge DOM structure: badge is a direct child of the <li>, right-aligned between content and action buttons.
+ * - Action buttons (delete, move) remain outside the flex-1 content div.
  * - Applies line-through and text-gray-400 styles when checked.
  * - Calls onToggle when the checkbox is clicked.
  * - Calls onRemove when the remove button is clicked.
@@ -120,80 +120,83 @@ describe("ChecklistItem — tag badge", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Tag badge DOM structure (FEAT-tag-row)
-// The tag badge and label span must be siblings inside a shared flex wrapper
-// div (flex items-baseline gap-2 flex-wrap), NOT separate flex children of the
-// li. Action buttons (delete, move) must remain outside this wrapper.
+// Tag badge DOM structure (FEAT-tag-right)
+// The tag badge is a direct child of the <li> row, right-aligned between the
+// flex-1 content div and the action buttons. It is NOT inside the content div.
 // ---------------------------------------------------------------------------
 
 describe("ChecklistItem — tag badge DOM structure", () => {
-  it("'Quan trọng' badge is a sibling of the label span inside the same flex wrapper", () => {
+  it("'Quan trọng' badge is a direct child of the <li> element", () => {
     const { container } = render(
       <ChecklistItem {...makeProps({ tag: "must" })} />
     );
     const badge = screen.getByText("Quan trọng");
-    const labelSpan = screen.getByText("Sunscreen SPF50+");
+    const li = container.querySelector("li")!;
 
-    // Both must share the same parentElement
-    expect(badge.parentElement).toBe(labelSpan.parentElement);
+    // Badge's parentElement must be the <li>
+    expect(badge.parentElement).toBe(li);
   });
 
-  it("'Nên có' badge is a sibling of the label span inside the same flex wrapper", () => {
+  it("'Nên có' badge is a direct child of the <li> element", () => {
     const { container } = render(
       <ChecklistItem {...makeProps({ tag: "opt" })} />
     );
     const badge = screen.getByText("Nên có");
-    const labelSpan = screen.getByText("Sunscreen SPF50+");
+    const li = container.querySelector("li")!;
 
-    expect(badge.parentElement).toBe(labelSpan.parentElement);
+    expect(badge.parentElement).toBe(li);
   });
 
-  it("the shared wrapper div has flex and items-baseline classes", () => {
-    render(<ChecklistItem {...makeProps({ tag: "must" })} />);
-    const badge = screen.getByText("Quan trọng");
-    const wrapper = badge.parentElement!;
+  it("the <li> row has flex and items-start classes", () => {
+    const { container } = render(
+      <ChecklistItem {...makeProps({ tag: "must" })} />
+    );
+    const li = container.querySelector("li")!;
 
-    expect(wrapper.tagName).toBe("DIV");
-    expect(wrapper).toHaveClass("flex");
-    expect(wrapper).toHaveClass("items-baseline");
-    expect(wrapper).toHaveClass("gap-2");
-    expect(wrapper).toHaveClass("flex-wrap");
+    expect(li).toHaveClass("flex");
+    expect(li).toHaveClass("items-start");
   });
 
-  it("the delete button is NOT inside the label+badge flex wrapper", () => {
-    render(<ChecklistItem {...makeProps({ tag: "must" })} />);
+  it("badge is a sibling of the flex-1 content div at the <li> level", () => {
+    const { container } = render(
+      <ChecklistItem {...makeProps({ tag: "must" })} />
+    );
     const badge = screen.getByText("Quan trọng");
-    const wrapper = badge.parentElement!;
+    const contentDiv = container.querySelector("li > div.flex-1")!;
+
+    // Both badge and content div share the same parent (<li>)
+    expect(badge.parentElement).toBe(contentDiv.parentElement);
+  });
+
+  it("the delete button is NOT inside the flex-1 content div", () => {
+    render(<ChecklistItem {...makeProps({ tag: "must" })} />);
+    const contentDiv = document.querySelector("li > div.flex-1")!;
     const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
 
-    // The delete button must not be a descendant of the wrapper
-    expect(wrapper.contains(deleteBtn)).toBe(false);
+    expect(contentDiv.contains(deleteBtn)).toBe(false);
   });
 
-  it("move buttons are NOT inside the label+badge flex wrapper", () => {
+  it("move buttons are NOT inside the flex-1 content div", () => {
     render(
       <ChecklistItem
         {...makeProps({ tag: "must", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
       />
     );
-    const badge = screen.getByText("Quan trọng");
-    const wrapper = badge.parentElement!;
+    const contentDiv = document.querySelector("li > div.flex-1")!;
     const moveUpBtn = screen.getByRole("button", { name: /di chuyển mục lên/i });
     const moveDownBtn = screen.getByRole("button", { name: /di chuyển mục xuống/i });
 
-    expect(wrapper.contains(moveUpBtn)).toBe(false);
-    expect(wrapper.contains(moveDownBtn)).toBe(false);
+    expect(contentDiv.contains(moveUpBtn)).toBe(false);
+    expect(contentDiv.contains(moveDownBtn)).toBe(false);
   });
 
-  it("label span without a tag has no badge sibling in the wrapper", () => {
-    render(<ChecklistItem {...makeProps()} />);
-    const labelSpan = screen.getByText("Sunscreen SPF50+");
-    const wrapper = labelSpan.parentElement!;
+  it("label span without a tag has no badge sibling at the <li> level", () => {
+    const { container } = render(<ChecklistItem {...makeProps()} />);
+    const li = container.querySelector("li")!;
 
-    // Only child should be the label span (no badge siblings)
-    const spans = wrapper.querySelectorAll("span");
-    expect(spans).toHaveLength(1);
-    expect(spans[0].textContent).toBe("Sunscreen SPF50+");
+    // No badge spans should exist as direct children of <li>
+    const directSpans = li.querySelectorAll(":scope > span");
+    expect(directSpans).toHaveLength(0);
   });
 });
 
