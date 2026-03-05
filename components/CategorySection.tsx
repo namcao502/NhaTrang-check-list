@@ -29,13 +29,15 @@ interface Props {
   category: Category;
   visibleItems: Item[];
   onToggleItem: (itemId: string) => void;
-  onAddItem: (label: string, tag?: "must" | "opt", note?: string) => void;
+  onAddItem: (label: string, tag?: "must" | "opt", note?: string, qty?: number) => void;
   onRemoveItem: (itemId: string) => void;
   onRemoveCategory: () => void;
   onRenameCategory: (newName: string) => void;
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
+  onQtyChange: (itemId: string, qty: number) => void;
+  onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
   onUpdateIcon: (icon: string) => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
@@ -52,6 +54,8 @@ export default function CategorySection({
   onBulkToggle,
   onRenameItem,
   onNoteChange,
+  onQtyChange,
+  onMoveItem,
   onUpdateIcon,
   onMoveUp,
   onMoveDown,
@@ -222,24 +226,31 @@ export default function CategorySection({
             <p className="text-sm text-gray-400 dark:text-gray-400 px-3 py-2">Chưa có đồ vật nào.</p>
           ) : (
             <ul>
-              {visibleItems.map((item) => (
-                <ChecklistItem
-                  key={item.id}
-                  id={item.id}
-                  label={item.label}
-                  checked={item.checked}
-                  note={item.note}
-                  tag={item.tag}
-                  onToggle={() => onToggleItem(item.id)}
-                  onRemove={() => onRemoveItem(item.id)}
-                  onRename={(newLabel) => onRenameItem(item.id, newLabel)}
-                  onNoteChange={(note) => onNoteChange(item.id, note)}
-                />
-              ))}
+              {visibleItems.map((item) => {
+                const origIdx = category.items.findIndex((i) => i.id === item.id);
+                return (
+                  <ChecklistItem
+                    key={item.id}
+                    id={item.id}
+                    label={item.label}
+                    checked={item.checked}
+                    note={item.note}
+                    tag={item.tag}
+                    qty={item.qty}
+                    onToggle={() => onToggleItem(item.id)}
+                    onRemove={() => onRemoveItem(item.id)}
+                    onRename={(newLabel) => onRenameItem(item.id, newLabel)}
+                    onNoteChange={(note) => onNoteChange(item.id, note)}
+                    onQtyChange={(qty) => onQtyChange(item.id, qty)}
+                    onMoveUp={origIdx > 0 ? () => onMoveItem(item.id, 'up') : undefined}
+                    onMoveDown={origIdx < category.items.length - 1 ? () => onMoveItem(item.id, 'down') : undefined}
+                  />
+                );
+              })}
             </ul>
           )}
           <div className="print-hide">
-            <AddItemForm onAdd={(label, tag, note) => onAddItem(label, tag, note)} />
+            <AddItemForm onAdd={(label, tag, note, qty) => onAddItem(label, tag, note, qty)} />
           </div>
         </div>
       )}

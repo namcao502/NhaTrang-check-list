@@ -3,21 +3,23 @@
 import { useState } from "react";
 
 interface Props {
-  onAdd: (label: string, tag?: "must" | "opt", note?: string) => void;
+  onAdd: (label: string, tag?: "must" | "opt", note?: string, qty?: number) => void;
 }
 
 export default function AddItemForm({ onAdd }: Props) {
   const [value, setValue] = useState("");
   const [note, setNote] = useState("");
   const [tag, setTag] = useState<"must" | "opt" | undefined>(undefined);
+  const [qty, setQty] = useState(1);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!value.trim()) return;
-    onAdd(value, tag, note.trim() || undefined);
+    onAdd(value, tag, note.trim() || undefined, qty > 1 ? qty : undefined);
     setValue("");
     setNote("");
     setTag(undefined);
+    setQty(1);
   }
 
   return (
@@ -44,6 +46,15 @@ export default function AddItemForm({ onAdd }: Props) {
         onChange={(e) => setNote(e.target.value)}
         placeholder="Mô tả (tuỳ chọn)..."
         className="text-base border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg px-3 py-3 text-gray-500 focus:outline-none focus:ring-2 focus:ring-ocean-400 dark:focus:ring-ocean-500 focus:border-transparent"
+      />
+      <input
+        type="number"
+        min={1}
+        max={99}
+        value={qty === 1 ? '' : qty}
+        onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 1))}
+        placeholder="SL"
+        className="w-14 text-sm border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ocean-400 dark:focus:ring-ocean-500"
       />
       <div className="flex gap-2 flex-wrap">
         <button

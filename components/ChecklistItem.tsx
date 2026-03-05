@@ -8,10 +8,14 @@ interface Props {
   checked: boolean;
   note?: string;
   tag?: "must" | "opt";
+  qty?: number;
   onToggle: () => void;
   onRemove: () => void;
   onRename: (newLabel: string) => void;
   onNoteChange: (note: string) => void;
+  onQtyChange: (qty: number) => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 export default function ChecklistItem({
@@ -20,19 +24,27 @@ export default function ChecklistItem({
   checked,
   note,
   tag,
+  qty,
   onToggle,
   onRemove,
   onRename,
   onNoteChange,
+  onQtyChange,
+  onMoveUp,
+  onMoveDown,
 }: Props) {
   const [editingLabel, setEditingLabel] = useState(false);
   const [labelDraft, setLabelDraft] = useState(label);
   const [editingNote, setEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState(note ?? "");
 
+  const [editingQty, setEditingQty] = useState(false);
+  const [qtyDraft, setQtyDraft] = useState(qty ?? 1);
+
   // Ref flags to prevent onBlur from committing after Escape
   const cancelledLabelRef = useRef(false);
   const cancelledNoteRef = useRef(false);
+  const cancelledQtyRef = useRef(false);
 
   // Keep drafts in sync if props change externally
   const prevLabel = useRef(label);
@@ -44,6 +56,11 @@ export default function ChecklistItem({
   if (prevNote.current !== note) {
     prevNote.current = note;
     if (!editingNote) setNoteDraft(note ?? "");
+  }
+  const prevQty = useRef(qty);
+  if (prevQty.current !== qty) {
+    prevQty.current = qty;
+    if (!editingQty) setQtyDraft(qty ?? 1);
   }
 
   function commitLabel() {
@@ -156,6 +173,39 @@ export default function ChecklistItem({
         )}
       </div>
 
+      {(qty ?? 0) > 1 && !editingQty && (
+        <button
+          type="button"
+          onClick={() => { setQtyDraft(qty ?? 1); setEditingQty(true); }}
+          className="text-xs px-1.5 py-0.5 rounded-full bg-ocean-100 text-ocean-600 dark:bg-ocean-900/40 dark:text-ocean-300 font-medium whitespace-nowrap flex-shrink-0 hover:bg-ocean-200 dark:hover:bg-ocean-800/40 transition-colors"
+        >
+          &times;{qty}
+        </button>
+      )}
+      {editingQty && (
+        <input
+          autoFocus
+          type="number"
+          min={1}
+          max={99}
+          value={qtyDraft}
+          onChange={(e) => setQtyDraft(Math.max(1, parseInt(e.target.value) || 1))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
+            if (e.key === "Escape") {
+              cancelledQtyRef.current = true;
+              setQtyDraft(qty ?? 1);
+              setEditingQty(false);
+            }
+          }}
+          onBlur={() => {
+            if (cancelledQtyRef.current) { cancelledQtyRef.current = false; return; }
+            onQtyChange(qtyDraft);
+            setEditingQty(false);
+          }}
+          className="w-12 text-xs text-center border border-ocean-300 dark:border-ocean-600 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:focus:ring-ocean-500 dark:bg-slate-700 dark:text-gray-100"
+        />
+      )}
       {tag === "must" && (
         <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap flex-shrink-0">
           Quan trọng
@@ -165,6 +215,24 @@ export default function ChecklistItem({
         <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap flex-shrink-0">
           Nên có
         </span>
+      )}
+      {onMoveUp && (
+        <button
+          aria-label="Di chuyển lên"
+          onClick={onMoveUp}
+          className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+        >
+          ↑
+        </button>
+      )}
+      {onMoveDown && (
+        <button
+          aria-label="Di chuyển xuống"
+          onClick={onMoveDown}
+          className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+        >
+          ↓
+        </button>
       )}
       <button
         onClick={onRemove}
