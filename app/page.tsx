@@ -11,6 +11,8 @@ import ExportButton from "@/components/ExportButton";
 import PrintButton from "@/components/PrintButton";
 import UndoButton from "@/components/UndoButton";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTemplates } from "@/lib/useTemplates";
+import TemplateManager from "@/components/TemplateManager";
 
 export default function Home() {
   const {
@@ -28,10 +30,14 @@ export default function Home() {
     renameCategory,
     bulkToggleCategory,
     resetAll,
+    loadCategories,
+    updateCategoryIcon,
     moveCategory,
     undo,
     canUndo,
   } = useChecklist();
+
+  const { templates, saveAsTemplate, deleteTemplate } = useTemplates();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [mustOnly, setMustOnly] = useState(false);
@@ -170,6 +176,16 @@ export default function Home() {
             <ExportButton categories={categories} />
           </div>
 
+          <div className="print-hide">
+            <TemplateManager
+              templates={templates}
+              onSave={saveAsTemplate}
+              onLoad={loadCategories}
+              onDelete={deleteTemplate}
+              currentCategories={categories}
+            />
+          </div>
+
           <PrintButton />
 
           <div className="print-hide">
@@ -199,6 +215,7 @@ export default function Home() {
                 onBulkToggle={() => bulkToggleCategory(cat.id)}
                 onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}
                 onNoteChange={(itemId, note) => updateNote(cat.id, itemId, note)}
+                onUpdateIcon={(icon) => updateCategoryIcon(cat.id, icon)}
                 onMoveUp={origIdx > 0 ? () => moveCategory(cat.id, 'up') : undefined}
                 onMoveDown={origIdx < categories.length - 1 ? () => moveCategory(cat.id, 'down') : undefined}
               />

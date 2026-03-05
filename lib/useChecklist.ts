@@ -75,13 +75,13 @@ export function useChecklist() {
     );
   }
 
-  function addCategory(name: string) {
+  function addCategory(name: string, icon?: string) {
     const trimmed = name.trim();
     if (!trimmed) return;
     pushUndo();
     setCategories((prev) => [
       ...prev,
-      { id: generateId(), name: trimmed, items: [] },
+      { id: generateId(), name: trimmed, items: [], ...(icon ? { icon } : {}) },
     ]);
   }
 
@@ -191,6 +191,26 @@ export function useChecklist() {
     setCategories(DEFAULT_CATEGORIES);
   }
 
+  function loadCategories(newCategories: Category[]) {
+    pushUndo();
+    setCategories(newCategories);
+  }
+
+  function updateCategoryIcon(categoryId: string, icon: string) {
+    pushUndo();
+    setCategories((prev) =>
+      prev.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        if (!icon) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { icon: _removed, ...rest } = cat;
+          return rest;
+        }
+        return { ...cat, icon };
+      })
+    );
+  }
+
   function moveCategory(categoryId: string, direction: 'up' | 'down') {
     pushUndo();
     setCategories((prev) => {
@@ -254,6 +274,8 @@ export function useChecklist() {
     renameCategory,
     bulkToggleCategory,
     resetAll,
+    loadCategories,
+    updateCategoryIcon,
     moveCategory,
     moveItem,
     undo,

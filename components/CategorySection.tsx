@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import type { Category, Item } from "@/lib/types";
 import ChecklistItem from "./ChecklistItem";
 import AddItemForm from "./AddItemForm";
+import EmojiPicker from "./EmojiPicker";
 
 const COLLAPSE_STORAGE_KEY = "beach-collapse-state";
 
@@ -35,6 +36,7 @@ interface Props {
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
+  onUpdateIcon: (icon: string) => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
 }
@@ -50,6 +52,7 @@ export default function CategorySection({
   onBulkToggle,
   onRenameItem,
   onNoteChange,
+  onUpdateIcon,
   onMoveUp,
   onMoveDown,
 }: Props) {
@@ -59,6 +62,7 @@ export default function CategorySection({
   });
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(category.name);
+  const [showIconPicker, setShowIconPicker] = useState(false);
 
   // Ref flag to prevent onBlur from committing after Escape
   const cancelledNameRef = useRef(false);
@@ -110,9 +114,21 @@ export default function CategorySection({
           className="flex items-center gap-3 min-w-0"
           onClick={(e) => e.stopPropagation()}
         >
-          {category.icon && (
-            <span className="text-xl flex-shrink-0">{category.icon}</span>
-          )}
+          <div className="relative print-hide" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setShowIconPicker((v) => !v)}
+              className="text-xl flex-shrink-0 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg w-9 h-9 flex items-center justify-center transition-colors"
+            >
+              {category.icon || '📦'}
+            </button>
+            {showIconPicker && (
+              <EmojiPicker
+                onSelect={(emoji) => onUpdateIcon(emoji)}
+                onClose={() => setShowIconPicker(false)}
+              />
+            )}
+          </div>
 
           {editingName ? (
             <input
