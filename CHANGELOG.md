@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-fireworks] - 2026-03-05
+### Added
+- `components/AmbientFireworks.tsx` — continuous ambient firework animation using `canvas-confetti`. A full-screen fixed canvas fires 15-30 theme-colored particles every 3 seconds at random positions. Non-interactive (`pointer-events: none`), respects `prefers-reduced-motion`, works in both light and dark mode.
+- `app/page.tsx` — renders `<AmbientFireworks />` as the first child for a background decorative effect.
+
+---
+
 ## [FEAT-remove-qty] - 2026-03-05
 ### Removed
 - Removed `qty?: number` field from `Item` interface, `updateQty` action from `useChecklist`, and all quantity UI across 8 files.
