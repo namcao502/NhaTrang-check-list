@@ -88,35 +88,47 @@ export default function ChecklistItem({
       />
 
       <div className="flex-1 min-w-0">
-        {editingLabel ? (
-          <input
-            autoFocus
-            className="w-full text-sm border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:focus:ring-ocean-500 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
-            value={labelDraft}
-            onChange={(e) => setLabelDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-              if (e.key === "Escape") {
-                cancelledLabelRef.current = true;
+        <div className="flex items-baseline gap-2 flex-wrap">
+          {editingLabel ? (
+            <input
+              autoFocus
+              className="w-full text-sm border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:focus:ring-ocean-500 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
+              value={labelDraft}
+              onChange={(e) => setLabelDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                if (e.key === "Escape") {
+                  cancelledLabelRef.current = true;
+                  setLabelDraft(label);
+                  setEditingLabel(false);
+                }
+              }}
+              onBlur={commitLabel}
+            />
+          ) : (
+            <span
+              className={`text-base cursor-text select-none ${
+                checked ? "line-through text-gray-400 dark:text-gray-400" : "text-gray-700 dark:text-gray-200"
+              }`}
+              onClick={() => {
                 setLabelDraft(label);
-                setEditingLabel(false);
-              }
-            }}
-            onBlur={commitLabel}
-          />
-        ) : (
-          <span
-            className={`text-base cursor-text select-none ${
-              checked ? "line-through text-gray-400 dark:text-gray-400" : "text-gray-700 dark:text-gray-200"
-            }`}
-            onClick={() => {
-              setLabelDraft(label);
-              setEditingLabel(true);
-            }}
-          >
-            {label}
-          </span>
-        )}
+                setEditingLabel(true);
+              }}
+            >
+              {label}
+            </span>
+          )}
+          {tag === "must" && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap">
+              Quan trọng
+            </span>
+          )}
+          {tag === "opt" && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap">
+              Nên có
+            </span>
+          )}
+        </div>
 
         {/* Note area */}
         {editingNote ? (
@@ -160,16 +172,6 @@ export default function ChecklistItem({
         )}
       </div>
 
-      {tag === "must" && (
-        <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap flex-shrink-0">
-          Quan trọng
-        </span>
-      )}
-      {tag === "opt" && (
-        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap flex-shrink-0">
-          Nên có
-        </span>
-      )}
       {onMoveUp && (
         <button
           aria-label="Di chuyển mục lên"
