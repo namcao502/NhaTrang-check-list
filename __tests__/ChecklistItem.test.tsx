@@ -8,6 +8,8 @@
  * - Renders "Quan trọng" badge (coral) when tag === 'must'.
  * - Renders "Nên có" badge (purple) when tag === 'opt'.
  * - Renders no badge when tag is undefined.
+ * - Tag badge DOM structure: badge is a sibling of the label span inside a shared flex wrapper.
+ * - Action buttons (delete, move) remain outside the label+badge wrapper.
  * - Applies line-through and text-gray-400 styles when checked.
  * - Calls onToggle when the checkbox is clicked.
  * - Calls onRemove when the remove button is clicked.
@@ -114,6 +116,84 @@ describe("ChecklistItem — tag badge", () => {
     render(<ChecklistItem {...makeProps()} />);
     expect(screen.queryByText("Quan trọng")).not.toBeInTheDocument();
     expect(screen.queryByText("Nên có")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tag badge DOM structure (FEAT-tag-row)
+// The tag badge and label span must be siblings inside a shared flex wrapper
+// div (flex items-baseline gap-2 flex-wrap), NOT separate flex children of the
+// li. Action buttons (delete, move) must remain outside this wrapper.
+// ---------------------------------------------------------------------------
+
+describe("ChecklistItem — tag badge DOM structure", () => {
+  it("'Quan trọng' badge is a sibling of the label span inside the same flex wrapper", () => {
+    const { container } = render(
+      <ChecklistItem {...makeProps({ tag: "must" })} />
+    );
+    const badge = screen.getByText("Quan trọng");
+    const labelSpan = screen.getByText("Sunscreen SPF50+");
+
+    // Both must share the same parentElement
+    expect(badge.parentElement).toBe(labelSpan.parentElement);
+  });
+
+  it("'Nên có' badge is a sibling of the label span inside the same flex wrapper", () => {
+    const { container } = render(
+      <ChecklistItem {...makeProps({ tag: "opt" })} />
+    );
+    const badge = screen.getByText("Nên có");
+    const labelSpan = screen.getByText("Sunscreen SPF50+");
+
+    expect(badge.parentElement).toBe(labelSpan.parentElement);
+  });
+
+  it("the shared wrapper div has flex and items-baseline classes", () => {
+    render(<ChecklistItem {...makeProps({ tag: "must" })} />);
+    const badge = screen.getByText("Quan trọng");
+    const wrapper = badge.parentElement!;
+
+    expect(wrapper.tagName).toBe("DIV");
+    expect(wrapper).toHaveClass("flex");
+    expect(wrapper).toHaveClass("items-baseline");
+    expect(wrapper).toHaveClass("gap-2");
+    expect(wrapper).toHaveClass("flex-wrap");
+  });
+
+  it("the delete button is NOT inside the label+badge flex wrapper", () => {
+    render(<ChecklistItem {...makeProps({ tag: "must" })} />);
+    const badge = screen.getByText("Quan trọng");
+    const wrapper = badge.parentElement!;
+    const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
+
+    // The delete button must not be a descendant of the wrapper
+    expect(wrapper.contains(deleteBtn)).toBe(false);
+  });
+
+  it("move buttons are NOT inside the label+badge flex wrapper", () => {
+    render(
+      <ChecklistItem
+        {...makeProps({ tag: "must", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
+      />
+    );
+    const badge = screen.getByText("Quan trọng");
+    const wrapper = badge.parentElement!;
+    const moveUpBtn = screen.getByRole("button", { name: /di chuyển mục lên/i });
+    const moveDownBtn = screen.getByRole("button", { name: /di chuyển mục xuống/i });
+
+    expect(wrapper.contains(moveUpBtn)).toBe(false);
+    expect(wrapper.contains(moveDownBtn)).toBe(false);
+  });
+
+  it("label span without a tag has no badge sibling in the wrapper", () => {
+    render(<ChecklistItem {...makeProps()} />);
+    const labelSpan = screen.getByText("Sunscreen SPF50+");
+    const wrapper = labelSpan.parentElement!;
+
+    // Only child should be the label span (no badge siblings)
+    const spans = wrapper.querySelectorAll("span");
+    expect(spans).toHaveLength(1);
+    expect(spans[0].textContent).toBe("Sunscreen SPF50+");
   });
 });
 
