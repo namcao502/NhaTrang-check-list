@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-remove-qty] - 2026-03-05
+### Removed
+- Removed `qty?: number` field from `Item` interface, `updateQty` action from `useChecklist`, and all quantity UI across 8 files.
+
+---
+
 ## [FEAT-batch-d] - 2026-03-04
 ### Added
 - **Delete category** — `removeCategory` action in `useChecklist`; delete button (`x`) in `CategorySection` header with `window.confirm` guard.
