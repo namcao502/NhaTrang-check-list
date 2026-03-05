@@ -33,7 +33,6 @@ All state lives client-side; there is no backend or API layer.
 | `components/ChecklistStats.tsx` | Progress bar + packed count + reset button |
 | `components/FilterBar.tsx` | Search input + "Chi quan trong" must-only toggle + "An da xong" hide-checked toggle (glass-card, `'use client'`) |
 | `components/ThemeToggle.tsx` | Dark mode toggle — reads/writes `"beach-dark-mode"` localStorage, toggles `dark` class on `<html>` |
-| `components/ExportButton.tsx` | Clipboard copy + Web Share API "Chia se" button (feature-detected at mount) |
 | `components/AmbientFireworks.tsx` | Continuous ambient confetti animation — fixed canvas, 15-30 particles every 3s, `pointer-events: none`, `disableForReducedMotion` |
 
 ### State shape

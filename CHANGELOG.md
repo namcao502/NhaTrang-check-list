@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-remove-buttons] - 2026-03-05
+### Removed
+- Removed 4 action buttons from the UI: "Sao chep danh sach" (copy), "Chia se" (share), "Mau chuyen di" (template manager), "In danh sach" (print).
+- Deleted `components/ExportButton.tsx`, `components/PrintButton.tsx`, `components/TemplateManager.tsx`, `lib/useTemplates.ts`, `__tests__/ExportButton.test.tsx`, `e2e/export.spec.ts`.
+- Cleaned up unused imports and destructured values from `app/page.tsx`.
+
+---
+
 ## [FEAT-fireworks] - 2026-03-05
 ### Added
 - `components/AmbientFireworks.tsx` — continuous ambient firework animation using `canvas-confetti`. A full-screen fixed canvas fires 15-30 theme-colored particles every 3 seconds at random positions. Non-interactive (`pointer-events: none`), respects `prefers-reduced-motion`, works in both light and dark mode.
