@@ -198,6 +198,53 @@ describe("ChecklistItem — tag badge DOM structure", () => {
     const directSpans = li.querySelectorAll(":scope > span");
     expect(directSpans).toHaveLength(0);
   });
+
+  it("'must' badge has flex-shrink-0 and whitespace-nowrap to prevent wrapping", () => {
+    render(<ChecklistItem {...makeProps({ tag: "must" })} />);
+    const badge = screen.getByText("Quan trọng");
+
+    expect(badge).toHaveClass("flex-shrink-0");
+    expect(badge).toHaveClass("whitespace-nowrap");
+  });
+
+  it("'opt' badge has flex-shrink-0 and whitespace-nowrap to prevent wrapping", () => {
+    render(<ChecklistItem {...makeProps({ tag: "opt" })} />);
+    const badge = screen.getByText("Nên có");
+
+    expect(badge).toHaveClass("flex-shrink-0");
+    expect(badge).toHaveClass("whitespace-nowrap");
+  });
+
+  it("badge stays right-aligned when item label is very long", () => {
+    const longLabel = "A".repeat(200);
+    const { container } = render(
+      <ChecklistItem {...makeProps({ label: longLabel, tag: "must" })} />
+    );
+    const badge = screen.getByText("Quan trọng");
+    const li = container.querySelector("li")!;
+    const contentDiv = container.querySelector("li > div.flex-1")!;
+
+    // Badge is still a direct child of <li>, not nested inside content
+    expect(badge.parentElement).toBe(li);
+    // Content div has flex-1 and min-w-0 so it shrinks, badge does not
+    expect(contentDiv).toHaveClass("flex-1");
+    expect(contentDiv).toHaveClass("min-w-0");
+  });
+
+  it("badge appears after content div in DOM order (visual right placement)", () => {
+    const { container } = render(
+      <ChecklistItem {...makeProps({ tag: "must" })} />
+    );
+    const li = container.querySelector("li")!;
+    const contentDiv = container.querySelector("li > div.flex-1")!;
+    const badge = screen.getByText("Quan trọng");
+
+    const children = Array.from(li.children);
+    const contentIndex = children.indexOf(contentDiv);
+    const badgeIndex = children.indexOf(badge);
+
+    expect(badgeIndex).toBeGreaterThan(contentIndex);
+  });
 });
 
 // ---------------------------------------------------------------------------
