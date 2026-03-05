@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-tag-row] - 2026-03-05
+### Changed
+- Repositioned tag badges ("Quan trong" / "Nen co") in `ChecklistItem` to sit inline with the item label text using a `flex items-baseline gap-2 flex-wrap` wrapper, instead of being separate siblings. Action buttons remain grouped on the right side.
+
+---
+
 ## [FEAT-remove-buttons] - 2026-03-05
 ### Removed
 - Removed 4 action buttons from the UI: "Sao chep danh sach" (copy), "Chia se" (share), "Mau chuyen di" (template manager), "In danh sach" (print).
