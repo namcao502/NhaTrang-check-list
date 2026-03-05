@@ -162,17 +162,6 @@ export default function ChecklistItem({
         )}
       </div>
 
-      {tag === "must" && (
-        <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap flex-shrink-0">
-          Quan trọng
-        </span>
-      )}
-      {tag === "opt" && (
-        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap flex-shrink-0">
-          Nên có
-        </span>
-      )}
-
       {onMoveUp && (
         <button
           aria-label="Di chuyển mục lên"
@@ -191,6 +180,18 @@ export default function ChecklistItem({
           ↓
         </button>
       )}
+
+      {tag === "must" && (
+        <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap flex-shrink-0">
+          Quan trọng
+        </span>
+      )}
+      {tag === "opt" && (
+        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap flex-shrink-0">
+          Nên có
+        </span>
+      )}
+
       <button
         onClick={onRemove}
         aria-label={`Xoá ${label}`}
