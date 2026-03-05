@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-tag-right] - 2026-03-05
+### Changed
+- Moved tag badges (`Quan trong` / `Nen co`) from inside the label wrapper to be direct children of the `<li>`, positioned between the `flex-1` content div and the move/delete buttons. Badges are right-aligned with `flex-shrink-0` and `whitespace-nowrap`, forming a consistent vertical column.
+
+---
+
 ## [FEAT-tag-row] - 2026-03-05
 ### Changed
 - Repositioned tag badges ("Quan trong" / "Nen co") in `ChecklistItem` to sit inline with the item label text using a `flex items-baseline gap-2 flex-wrap` wrapper, instead of being separate siblings. Action buttons remain grouped on the right side.
