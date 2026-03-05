@@ -218,7 +218,7 @@ export default function ChecklistItem({
       )}
       {onMoveUp && (
         <button
-          aria-label="Di chuyển lên"
+          aria-label="Di chuyển mục lên"
           onClick={onMoveUp}
           className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         >
@@ -227,7 +227,7 @@ export default function ChecklistItem({
       )}
       {onMoveDown && (
         <button
-          aria-label="Di chuyển xuống"
+          aria-label="Di chuyển mục xuống"
           onClick={onMoveDown}
           className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         >

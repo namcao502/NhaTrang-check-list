@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -14,18 +14,29 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0077b6",
+};
+
 export const metadata: Metadata = {
-  title: "Nha Trang Packing List 🌊",
-  description: "Never forget anything at the beach again.",
+  title: "Nha Trang Packing List \u{1F30A}",
+  description: "Danh s\u00E1ch chu\u1EA9n b\u1ECB \u0111\u1ED3 \u0111i bi\u1EC3n Nha Trang",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Packing List",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi" className={`${playfair.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
+        <link rel="apple-touch-icon" href="/icons/icon.svg" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(localStorage.getItem("beach-dark-mode")==="true"){document.documentElement.classList.add("dark")}}catch(e){}})();`,
+            __html: `(function(){try{var v=localStorage.getItem("beach-dark-mode");if(v==="true"||(v==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()`,
           }}
         />
       </head>

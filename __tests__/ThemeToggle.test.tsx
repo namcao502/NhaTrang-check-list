@@ -16,6 +16,24 @@ import userEvent from "@testing-library/user-event";
 import ThemeToggle from "@/components/ThemeToggle";
 
 // ---------------------------------------------------------------------------
+// matchMedia mock (jsdom does not implement matchMedia)
+// ---------------------------------------------------------------------------
+
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// ---------------------------------------------------------------------------
 // localStorage mock
 // ---------------------------------------------------------------------------
 
@@ -70,21 +88,32 @@ describe("ThemeToggle — toggle behaviour", () => {
     expect(document.documentElement.classList.contains("dark")).toBe(true);
   });
 
-  it("removes 'dark' class from document.documentElement when clicked twice", async () => {
+  it("enters system mode after clicking twice (dark → system)", async () => {
     render(<ThemeToggle />);
 
-    await userEvent.click(screen.getByRole("button"));
-    await userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button")); // light → dark
+    await userEvent.click(screen.getByRole("button")); // dark → system
+
+    // System mode resolves via matchMedia mock (matches: false → light)
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
+  });
+
+  it("removes 'dark' class after clicking three times (full cycle back to light)", async () => {
+    render(<ThemeToggle />);
+
+    await userEvent.click(screen.getByRole("button")); // light → dark
+    await userEvent.click(screen.getByRole("button")); // dark → system
+    await userEvent.click(screen.getByRole("button")); // system → light
 
     expect(document.documentElement.classList.contains("dark")).toBe(false);
   });
 
-  it("updates the aria-label to light mode label after enabling dark mode", async () => {
+  it("updates the aria-label to system mode label after enabling dark mode", async () => {
     render(<ThemeToggle />);
 
     await userEvent.click(screen.getByRole("button"));
 
-    expect(screen.getByRole("button")).toHaveAccessibleName("Chuyển sang chế độ sáng");
+    expect(screen.getByRole("button")).toHaveAccessibleName("Chuyển sang chế độ hệ thống");
   });
 });
 
@@ -101,11 +130,21 @@ describe("ThemeToggle — localStorage persistence", () => {
     expect(localStorageMock.getItem("beach-dark-mode")).toBe("true");
   });
 
-  it("persists 'false' to localStorage when dark mode is disabled", async () => {
+  it("persists 'system' to localStorage after clicking twice (dark → system)", async () => {
     render(<ThemeToggle />);
 
-    await userEvent.click(screen.getByRole("button"));
-    await userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button")); // light → dark
+    await userEvent.click(screen.getByRole("button")); // dark → system
+
+    expect(localStorageMock.getItem("beach-dark-mode")).toBe("system");
+  });
+
+  it("persists 'false' to localStorage after clicking three times (full cycle back to light)", async () => {
+    render(<ThemeToggle />);
+
+    await userEvent.click(screen.getByRole("button")); // light → dark
+    await userEvent.click(screen.getByRole("button")); // dark → system
+    await userEvent.click(screen.getByRole("button")); // system → light
 
     expect(localStorageMock.getItem("beach-dark-mode")).toBe("false");
   });
@@ -117,7 +156,7 @@ describe("ThemeToggle — localStorage persistence", () => {
     render(<ThemeToggle />);
 
     expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(screen.getByRole("button")).toHaveAccessibleName("Chuyển sang chế độ sáng");
+    expect(screen.getByRole("button")).toHaveAccessibleName("Chuyển sang chế độ hệ thống");
   });
 
   it("restores light mode from localStorage on mount", () => {
