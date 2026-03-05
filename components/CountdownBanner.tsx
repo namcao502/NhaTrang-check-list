@@ -129,7 +129,7 @@ export default function CountdownBanner() {
             : 'border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10'
         } disabled:opacity-50 disabled:cursor-not-allowed`}
       >
-        {notifEnabled ? 'Nhac nho: bat' : 'Nhac nho'}
+        {notifEnabled ? 'Nhắc nhở: Bật' : 'Nhắc nhở'}
       </button>
     </div>
   );
