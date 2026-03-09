@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [FEAT-security-hardening] - 2026-03-09
+### Fixed
+- Added HTTP security headers in `next.config.ts` (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
+- Extracted dark-mode inline script to `public/dark-mode.js`, loaded via Next.js `<Script>` component instead of `dangerouslySetInnerHTML`
+- Added runtime type guards (`lib/validation.ts`) to validate all `JSON.parse` results from localStorage
+- Replaced `Math.random()` with `crypto.randomUUID()` for ID generation in `useChecklist`
+- Added date string validation in `lib/useCountdown.ts`
+- Wrapped `localStorage.setItem` calls in try/catch blocks
+
+---
+
 ## [FEAT-tag-order] - 2026-03-05
 ### Changed
 - Reordered tag badge position in `ChecklistItem` — tag badges now appear after move up/down buttons and before the delete button. New DOM order: checkbox, label, move up, move down, tag, delete.

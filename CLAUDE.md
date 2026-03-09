@@ -25,6 +25,7 @@ All state lives client-side; there is no backend or API layer.
 | `lib/types.ts` | `Item` and `Category` interfaces |
 | `lib/defaultData.ts` | Pre-populated beach checklist items grouped by category |
 | `lib/useChecklist.ts` | Custom hook — all state logic + localStorage persistence |
+| `lib/validation.ts` | Runtime type guards for localStorage data validation |
 | `app/page.tsx` | Root page, composes all components |
 | `components/CategorySection.tsx` | Collapsible category (chevron-only trigger) with inline category rename, bulk-toggle button, item list, and add-item form |
 | `components/ChecklistItem.tsx` | Single item row with checkbox, inline label rename (with tag badge inline in a `flex items-baseline` wrapper), inline note editor, move up/down buttons, tag badge, and delete button |
@@ -69,7 +70,7 @@ Filter state (`searchQuery`, `mustOnly`, `hideChecked`) lives in `app/page.tsx` 
 
 Tailwind is configured with `darkMode: "class"`. The `ThemeToggle` component toggles the `dark` class on `document.documentElement` and persists the choice in `"beach-dark-mode"` localStorage.
 
-To prevent a flash of unstyled content (FOUC), `app/layout.tsx` includes a blocking `<script>` in `<head>` that reads `"beach-dark-mode"` and applies the `dark` class before first paint. The `<html>` tag has `suppressHydrationWarning` to avoid a React mismatch when the server-rendered class differs from the client.
+To prevent a flash of unstyled content (FOUC), `public/dark-mode.js` contains a blocking IIFE that reads `"beach-dark-mode"` and applies the `dark` class before first paint. It is loaded in `app/layout.tsx` via the Next.js `<Script strategy="beforeInteractive">` component (replacing the previous `dangerouslySetInnerHTML` approach). The `<html>` tag has `suppressHydrationWarning` to avoid a React mismatch when the server-rendered class differs from the client.
 
 When adding dark variants to new components, follow the existing convention: pair each light style with a `dark:` variant (e.g., `text-gray-800 dark:text-gray-100`, `bg-white/70 dark:bg-slate-700`).
 
@@ -103,3 +104,13 @@ const handleBlur = () => {
 ```
 
 Setting `cancelRef.current = true` before the synthetic blur fires prevents the blur handler from saving a value that was intentionally cancelled. Apply this pattern to any future inline edit field.
+
+### Security headers
+
+`next.config.ts` configures HTTP security headers via `headers()`: Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, and Permissions-Policy. When adding new external resources (fonts, scripts, images), update the CSP directives accordingly.
+
+### localStorage validation pattern
+
+All `JSON.parse` calls on localStorage data are validated through type guards in `lib/validation.ts` before use. If validation fails, the code falls back to default values. All `localStorage.setItem` calls are wrapped in try/catch to handle quota errors gracefully. When adding a new localStorage key, create a corresponding type guard in `lib/validation.ts` and use it at the read site.
+
+ID generation uses `crypto.randomUUID()` instead of `Math.random()` for stronger uniqueness guarantees.
