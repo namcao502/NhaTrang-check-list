@@ -35,6 +35,29 @@ No Jira ticket required. No branch required. All work goes directly on the curre
 
 ---
 
+## Error Handling
+
+If any agent (plan-creator, fe-engineer, code-review-engineer, qa-engineer, doc-engineer) fails or returns an error:
+1. Report the error clearly to the user
+2. Ask whether to **retry** the failed step or **skip** it and continue
+3. If retrying, re-spawn the same agent with the same prompt
+4. If skipping, note it as `SKIPPED` in the final summary and continue to the next step
+
+---
+
+## State Persistence
+
+After each major step completes, save intermediate artifacts so work survives session loss:
+
+- After Step 2 (plan approved): write the approved plan to `.claude/wip/<feature-id>/plan.md`
+- After Step 3 (implementation): write the engineer summary to `.claude/wip/<feature-id>/engineer-summary.md`
+
+On session resume: if the user mentions resuming or restarting, check `.claude/wip/<feature-id>/` for saved artifacts and skip already-completed steps.
+
+Clean up `.claude/wip/<feature-id>/` after Step 7 completes successfully.
+
+---
+
 ## Workflow
 
 > **Gate:** Stop and wait for the user only after Step 2 (Implementation Plan). All other steps auto-proceed immediately.
@@ -68,7 +91,7 @@ Then immediately proceed to Step 2 without waiting.
 
 ### Step 2: Implementation Plan
 
-Only run this step when the user says to proceed.
+Auto-proceeds from Step 1.
 
 Spawn a `plan-creator` agent:
 
@@ -110,7 +133,7 @@ Store the approved plan as `<implementation plan>`.
 
 ### Step 3: Implementation
 
-Only run this step when the user says to proceed.
+Auto-proceeds after user approves the plan in Step 2.
 
 Spawn a `fe-engineer` agent:
 
@@ -134,7 +157,7 @@ Store the engineer's output as `<engineer summary>`, then immediately proceed to
 
 ### Step 4: Code Review
 
-Only run this step when the user says to proceed.
+Auto-proceeds from Step 3.
 
 Spawn a `code-review-engineer` agent:
 
@@ -166,7 +189,7 @@ Once review **PASS**, immediately proceed to Step 5.
 
 ### Step 5: Tests
 
-Only run this step when the user says to proceed.
+Auto-proceeds from Step 4 (run in parallel with Step 6).
 
 Spawn a `qa-engineer` agent:
 
@@ -188,7 +211,7 @@ Display the QA output, then immediately proceed to Step 6.
 
 ### Step 6: Documentation
 
-Only run this step when the user says to proceed.
+Auto-proceeds from Step 4 (run in parallel with Step 5).
 
 Spawn a `doc-engineer` agent:
 
@@ -211,7 +234,7 @@ Display the doc output, then immediately proceed to Step 7.
 
 ### Step 7: Self-Review
 
-Only run this step when the user says to proceed.
+Auto-proceeds after Steps 5 and 6 both complete.
 
 Run directly (no sub-agent):
 
@@ -219,8 +242,8 @@ Run directly (no sub-agent):
 # Recent commits
 cd C:/TEST/beach-check-list && git log --oneline -5
 
-# Files changed in the last commit(s)
-cd C:/TEST/beach-check-list && git diff HEAD~1 --name-only
+# All changed files (staged, unstaged, and untracked)
+cd C:/TEST/beach-check-list && git diff --name-only && git diff --cached --name-only && git ls-files --others --exclude-standard
 
 # Lint
 cd C:/TEST/beach-check-list && npm run lint

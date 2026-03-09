@@ -21,7 +21,7 @@ Conventions:
 - Strict TypeScript — no `any`
 - State is managed entirely client-side via `useState` + `useEffect` + localStorage
 - `useChecklist` is the single source of truth — all mutations go through it
-- IDs are generated with `generateId()` (random base-36 string)
+- IDs are generated with `generateId()` (`crypto.randomUUID()`)
 - localStorage key: `"beach-checklist"`
 
 ## Input
@@ -29,7 +29,7 @@ Conventions:
 You will receive:
 - **Ticket ID**, **Title**, **Requirements** (approved summary)
 - **Implementation Plan** — follow this exactly; do not re-explore from scratch
-- **Branch**: already created — do NOT create or switch branches
+- **Branch**: work on the current branch (master or whatever is checked out) — do NOT create or switch branches
 
 ## Instructions
 

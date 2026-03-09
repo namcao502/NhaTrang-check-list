@@ -1,0 +1,24 @@
+=== IMPLEMENT SKILL EVAL ===
+Scenario: baseline
+Timestamp: 20260309-165513
+
+Baseline SHA: bb780220c3f76b1e31f355303d762e0754a8ba8b
+Baseline tests: 270
+
+--- CODE QUALITY CHECKS (B) ---
+B1 Build: PASS
+B2 Lint: PASS
+B3 Tests: PASS
+B4 No any: PASS
+B5 No regressions: PASS (270 >= 270)
+
+--- PIPELINE CHECKS (D) ---
+D1 No extra branches: FAIL (3 extra branches)
+D2 Not pushed: OK (2 unpushed commits)
+D3 State persistence: SKIP (no wip dir — may have been cleaned up)
+
+--- SUMMARY ---
+Structural checks (A): MANUAL — review session transcript
+Functional checks (C): MANUAL — test in browser
+
+=== EVAL COMPLETE ===
