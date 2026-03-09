@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { isValidDateString } from "./validation";
 
 const DEPARTURE_KEY = "beach-departure";
 
@@ -45,12 +46,20 @@ export function useCountdown() {
 
   // Load departure date from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(DEPARTURE_KEY);
-    if (stored) {
-      setDepartureDateState(stored);
-    } else {
+    try {
+      const stored = localStorage.getItem(DEPARTURE_KEY);
+      if (stored && isValidDateString(stored)) {
+        setDepartureDateState(stored);
+      } else {
+        setDepartureDateState(DEFAULT_DEPARTURE);
+        try {
+          localStorage.setItem(DEPARTURE_KEY, DEFAULT_DEPARTURE);
+        } catch (e) {
+          console.warn("Failed to persist departure date to localStorage:", e);
+        }
+      }
+    } catch {
       setDepartureDateState(DEFAULT_DEPARTURE);
-      localStorage.setItem(DEPARTURE_KEY, DEFAULT_DEPARTURE);
     }
   }, []);
 
@@ -77,12 +86,21 @@ export function useCountdown() {
   }, [departureDate]);
 
   function setDeparture(date: string) {
-    localStorage.setItem(DEPARTURE_KEY, date);
+    if (!isValidDateString(date)) return;
+    try {
+      localStorage.setItem(DEPARTURE_KEY, date);
+    } catch (e) {
+      console.warn("Failed to persist departure date to localStorage:", e);
+    }
     setDepartureDateState(date);
   }
 
   function clearDeparture() {
-    localStorage.removeItem(DEPARTURE_KEY);
+    try {
+      localStorage.removeItem(DEPARTURE_KEY);
+    } catch (e) {
+      console.warn("Failed to remove departure date from localStorage:", e);
+    }
     setDepartureDateState(null);
   }
 

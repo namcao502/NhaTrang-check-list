@@ -1,0 +1,1 @@
+(function(){try{var v=localStorage.getItem("beach-dark-mode");if(v==="true"||(v==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()

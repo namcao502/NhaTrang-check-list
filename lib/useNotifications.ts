@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { isValidNotifiedDates } from "./validation";
 
 const STORAGE_KEY = "beach-notifications";
 const NOTIFIED_KEY = "beach-notified-dates";
@@ -31,7 +32,10 @@ export function useNotifications(departureDate: string | null) {
     const diffDays = Math.ceil(diffMs / 86400000);
 
     let notified: string[] = [];
-    try { notified = JSON.parse(localStorage.getItem(NOTIFIED_KEY) || '[]'); } catch {
+    try {
+      const parsed: unknown = JSON.parse(localStorage.getItem(NOTIFIED_KEY) || '[]');
+      notified = isValidNotifiedDates(parsed) ? parsed : [];
+    } catch {
       // Silently ignore parse errors
     }
 

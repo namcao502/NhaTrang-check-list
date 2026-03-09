@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import type { Category, Item } from "./types";
 import { DEFAULT_CATEGORIES } from "./defaultData";
+import { isValidCategories } from "./validation";
 
 const STORAGE_KEY = "beach-checklist";
 
 function generateId(): string {
-  return Math.random().toString(36).slice(2, 9);
+  return crypto.randomUUID();
 }
 
 export function useChecklist() {
@@ -23,7 +24,12 @@ export function useChecklist() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      setCategories(stored ? (JSON.parse(stored) as Category[]) : DEFAULT_CATEGORIES);
+      if (stored) {
+        const parsed: unknown = JSON.parse(stored);
+        setCategories(isValidCategories(parsed) ? parsed : DEFAULT_CATEGORIES);
+      } else {
+        setCategories(DEFAULT_CATEGORIES);
+      }
     } catch {
       setCategories(DEFAULT_CATEGORIES);
     }
@@ -33,7 +39,11 @@ export function useChecklist() {
   // Persist on every change (skip initial render)
   useEffect(() => {
     if (!loaded) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+    } catch (e) {
+      console.warn("Failed to persist checklist to localStorage:", e);
+    }
   }, [categories, loaded]);
 
   function toggleItem(categoryId: string, itemId: string) {

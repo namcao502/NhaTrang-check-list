@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -34,11 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="vi" className={`${playfair.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon.svg" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var v=localStorage.getItem("beach-dark-mode");if(v==="true"||(v==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()`,
-          }}
-        />
+        <Script src="/dark-mode.js" strategy="beforeInteractive" />
       </head>
       <body>{children}</body>
     </html>

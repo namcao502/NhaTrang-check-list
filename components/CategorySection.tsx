@@ -5,13 +5,16 @@ import type { Category, Item } from "@/lib/types";
 import ChecklistItem from "./ChecklistItem";
 import AddItemForm from "./AddItemForm";
 import EmojiPicker from "./EmojiPicker";
+import { isValidCollapseState } from "@/lib/validation";
 
 const COLLAPSE_STORAGE_KEY = "beach-collapse-state";
 
 function loadCollapseState(): Record<string, boolean> {
   try {
     const stored = localStorage.getItem(COLLAPSE_STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as Record<string, boolean>) : {};
+    if (!stored) return {};
+    const parsed: unknown = JSON.parse(stored);
+    return isValidCollapseState(parsed) ? parsed : {};
   } catch {
     return {};
   }
