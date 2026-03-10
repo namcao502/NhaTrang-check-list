@@ -1,4 +1,4 @@
-import type { Category, Item } from './types';
+import type { Category, Item, Template } from './types';
 
 function isValidItem(v: unknown): v is Item {
   if (typeof v !== 'object' || v === null) return false;
@@ -43,6 +43,22 @@ export function isValidCollapseState(
 
 export function isValidNotifiedDates(data: unknown): data is string[] {
   return Array.isArray(data) && data.every((v) => typeof v === 'string');
+}
+
+export function isValidTemplate(data: unknown): data is Template {
+  if (typeof data !== 'object' || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  return (
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.createdAt === 'string' &&
+    isValidCategories(obj.categories)
+  );
+}
+
+export function isValidTemplates(data: unknown): data is Template[] {
+  if (!Array.isArray(data)) return false;
+  return data.every(isValidTemplate);
 }
 
 export function isValidDateString(value: string): boolean {

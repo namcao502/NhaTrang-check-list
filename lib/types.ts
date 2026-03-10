@@ -13,3 +13,10 @@ export interface Category {
   items: Item[];
   icon?: string;
 }
+
+export interface Template {
+  id: string;
+  name: string;
+  categories: Category[];
+  createdAt: string;
+}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useChecklist } from "@/lib/useChecklist";
+import { useTemplates } from "@/lib/useTemplates";
 import CategorySection from "@/components/CategorySection";
 import ChecklistStats from "@/components/ChecklistStats";
 import AddCategoryForm from "@/components/AddCategoryForm";
@@ -12,6 +13,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import AmbientFireworks from "@/components/AmbientFireworks";
 import ExportButtons from "@/components/ExportButtons";
 import ImportTextModal from "@/components/ImportTextModal";
+import TemplatePicker from "@/components/TemplatePicker";
 
 export default function Home() {
   const {
@@ -34,9 +36,17 @@ export default function Home() {
     moveCategory,
     moveItem,
     importItems,
+    loadCategories,
     undo,
     canUndo,
   } = useChecklist();
+
+  const {
+    templates,
+    saveTemplate,
+    loadTemplate,
+    deleteTemplate,
+  } = useTemplates();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [mustOnly, setMustOnly] = useState(false);
@@ -176,6 +186,18 @@ export default function Home() {
 
           <div className="print-hide">
             <ExportButtons categories={categories} />
+          </div>
+
+          <div className="print-hide">
+            <TemplatePicker
+              templates={templates}
+              onSave={(name) => saveTemplate(name, categories)}
+              onLoad={(id) => {
+                const cats = loadTemplate(id);
+                if (cats) loadCategories(cats);
+              }}
+              onDelete={deleteTemplate}
+            />
           </div>
 
           <div className="print-hide">
