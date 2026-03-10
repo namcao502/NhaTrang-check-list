@@ -12,6 +12,8 @@ interface Props {
   onRemove: () => void;
   onRename: (newLabel: string) => void;
   onNoteChange: (note: string) => void;
+  quantity?: number;
+  onQuantityChange?: (quantity: number) => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
 }
@@ -26,6 +28,8 @@ export default function ChecklistItem({
   onRemove,
   onRename,
   onNoteChange,
+  quantity,
+  onQuantityChange,
   onMoveUp,
   onMoveDown,
 }: Props) {
@@ -118,6 +122,12 @@ export default function ChecklistItem({
               {label}
             </span>
           )}
+
+          {(quantity ?? 1) > 1 && (
+            <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+              &times; {quantity}
+            </span>
+          )}
         </div>
 
         {/* Note area */}
@@ -161,6 +171,29 @@ export default function ChecklistItem({
           </button>
         )}
       </div>
+
+      {onQuantityChange && (
+        <div className="print-hide flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+          <button
+            aria-label="Giảm số lượng"
+            disabled={(quantity ?? 1) <= 1}
+            onClick={() => onQuantityChange((quantity ?? 1) - 1)}
+            className="w-7 h-7 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-ocean-600 hover:text-ocean-700 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:text-ocean-300 dark:hover:bg-ocean-900/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            −
+          </button>
+          <span className="text-xs text-gray-500 dark:text-gray-400 w-5 text-center tabular-nums">
+            {quantity ?? 1}
+          </span>
+          <button
+            aria-label="Tăng số lượng"
+            onClick={() => onQuantityChange((quantity ?? 1) + 1)}
+            className="w-7 h-7 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-ocean-600 hover:text-ocean-700 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:text-ocean-300 dark:hover:bg-ocean-900/20 transition-colors"
+          >
+            +
+          </button>
+        </div>
+      )}
 
       {onMoveUp && (
         <button

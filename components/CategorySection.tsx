@@ -40,6 +40,7 @@ interface Props {
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
   onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
+  onQuantityChange: (itemId: string, quantity: number) => void;
   onUpdateIcon: (icon: string) => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
@@ -57,6 +58,7 @@ export default function CategorySection({
   onRenameItem,
   onNoteChange,
   onMoveItem,
+  onQuantityChange,
   onUpdateIcon,
   onMoveUp,
   onMoveDown,
@@ -241,6 +243,8 @@ export default function CategorySection({
                     onRemove={() => onRemoveItem(item.id)}
                     onRename={(newLabel) => onRenameItem(item.id, newLabel)}
                     onNoteChange={(note) => onNoteChange(item.id, note)}
+                    quantity={item.quantity}
+                    onQuantityChange={(qty) => onQuantityChange(item.id, qty)}
                     onMoveUp={origIdx > 0 ? () => onMoveItem(item.id, 'up') : undefined}
                     onMoveDown={origIdx < category.items.length - 1 ? () => onMoveItem(item.id, 'down') : undefined}
                   />

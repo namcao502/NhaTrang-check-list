@@ -208,6 +208,34 @@ export function useChecklist() {
     });
   }
 
+  function updateQuantity(categoryId: string, itemId: string, quantity: number) {
+    const clamped = Math.max(1, Math.round(quantity));
+    // No-op guard: skip pushUndo when the quantity value has not changed
+    const cat = categories.find((c) => c.id === categoryId);
+    const item = cat?.items.find((i) => i.id === itemId);
+    const currentQuantity = item?.quantity ?? 1;
+    if (clamped === currentQuantity) return;
+    pushUndo();
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id !== categoryId
+          ? cat
+          : {
+              ...cat,
+              items: cat.items.map((item) => {
+                if (item.id !== itemId) return item;
+                if (clamped === 1) {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { quantity: _removed, ...rest } = item;
+                  return rest;
+                }
+                return { ...item, quantity: clamped };
+              }),
+            }
+      )
+    );
+  }
+
   function moveItem(categoryId: string, itemId: string, direction: 'up' | 'down') {
     pushUndo();
     setCategories((prev) =>
@@ -260,6 +288,7 @@ export function useChecklist() {
     loadCategories,
     updateCategoryIcon,
     moveCategory,
+    updateQuantity,
     moveItem,
     undo,
     canUndo,

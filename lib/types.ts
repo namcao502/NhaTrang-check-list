@@ -4,6 +4,7 @@ export interface Item {
   checked: boolean;
   note?: string;
   tag?: 'must' | 'opt';
+  quantity?: number;
 }
 
 export interface Category {

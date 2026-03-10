@@ -28,6 +28,7 @@ export default function Home() {
     renameCategory,
     bulkToggleCategory,
     resetAll,
+    updateQuantity,
     updateCategoryIcon,
     moveCategory,
     moveItem,
@@ -202,6 +203,7 @@ export default function Home() {
                 onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}
                 onNoteChange={(itemId, note) => updateNote(cat.id, itemId, note)}
                 onMoveItem={(itemId, direction) => moveItem(cat.id, itemId, direction)}
+                onQuantityChange={(itemId, qty) => updateQuantity(cat.id, itemId, qty)}
                 onUpdateIcon={(icon) => updateCategoryIcon(cat.id, icon)}
                 onMoveUp={origIdx > 0 ? () => moveCategory(cat.id, 'up') : undefined}
                 onMoveDown={origIdx < categories.length - 1 ? () => moveCategory(cat.id, 'down') : undefined}

@@ -8,7 +8,11 @@ function isValidItem(v: unknown): v is Item {
     typeof obj.label === 'string' &&
     typeof obj.checked === 'boolean' &&
     (obj.note === undefined || typeof obj.note === 'string') &&
-    (obj.tag === undefined || obj.tag === 'must' || obj.tag === 'opt')
+    (obj.tag === undefined || obj.tag === 'must' || obj.tag === 'opt') &&
+    (obj.quantity === undefined ||
+      (typeof obj.quantity === 'number' &&
+        Number.isInteger(obj.quantity) &&
+        obj.quantity >= 1))
   );
 }
 
