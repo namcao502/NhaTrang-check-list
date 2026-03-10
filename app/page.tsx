@@ -10,6 +10,7 @@ import CountdownBanner from "@/components/CountdownBanner";
 import UndoButton from "@/components/UndoButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import AmbientFireworks from "@/components/AmbientFireworks";
+import ExportButtons from "@/components/ExportButtons";
 
 export default function Home() {
   const {
@@ -167,6 +168,10 @@ export default function Home() {
               total={totalItems}
               onReset={resetAll}
             />
+          </div>
+
+          <div className="print-hide">
+            <ExportButtons categories={categories} />
           </div>
 
           <div className="print-hide">

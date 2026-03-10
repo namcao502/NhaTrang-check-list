@@ -53,4 +53,14 @@ body {
   * {
     color: black !important;
   }
+  /* Ensure all categories are expanded when printing */
+  details {
+    display: block !important;
+  }
+  details > * {
+    display: block !important;
+  }
+  details[open] > summary ~ * {
+    display: block !important;
+  }
 }
