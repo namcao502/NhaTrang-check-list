@@ -12,6 +12,7 @@ import UndoButton from "@/components/UndoButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import AmbientFireworks from "@/components/AmbientFireworks";
 import ExportButtons from "@/components/ExportButtons";
+import PackingCardModal from "@/components/PackingCardModal";
 import ImportTextModal from "@/components/ImportTextModal";
 import TemplatePicker from "@/components/TemplatePicker";
 import ArchiveConfirmModal from "@/components/ArchiveConfirmModal";
@@ -59,6 +60,7 @@ export default function Home() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showPackingCard, setShowPackingCard] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -192,8 +194,17 @@ export default function Home() {
             />
           </div>
 
-          <div className="print-hide">
-            <ExportButtons categories={categories} />
+          <div className="print-hide flex gap-2">
+            <div className="flex-1">
+              <ExportButtons categories={categories} />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowPackingCard(true)}
+              className="rounded-xl px-3 py-2 text-sm font-medium transition-colors bg-white/70 dark:bg-slate-700/70 text-ocean-600 dark:text-ocean-300 border border-ocean-200 dark:border-ocean-700 hover:bg-ocean-50 hover:text-ocean-700 dark:hover:bg-ocean-700/30 dark:hover:text-ocean-200"
+            >
+              Chia se tien do
+            </button>
           </div>
 
           <div className="print-hide">
@@ -286,6 +297,13 @@ export default function Home() {
           onClose={() => setShowHistoryModal(false)}
         />
       )}
+
+      <PackingCardModal
+        open={showPackingCard}
+        onClose={() => setShowPackingCard(false)}
+        checkedItems={checkedItems}
+        totalItems={totalItems}
+      />
 
       <UndoButton canUndo={canUndo} onUndo={undo} />
     </>
