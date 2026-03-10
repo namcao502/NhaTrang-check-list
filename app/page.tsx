@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { DndContext, closestCenter, PointerSensor, TouchSensor, KeyboardSensor, useSensor, useSensors } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useChecklist } from "@/lib/useChecklist";
 import { useTemplates } from "@/lib/useTemplates";
 import CategorySection from "@/components/CategorySection";
+import SortableCategory from "@/components/SortableCategory";
 import ChecklistStats from "@/components/ChecklistStats";
 import AddCategoryForm from "@/components/AddCategoryForm";
 import FilterBar from "@/components/FilterBar";
@@ -41,8 +45,8 @@ export default function Home() {
     resetAll,
     updateQuantity,
     updateCategoryIcon,
-    moveCategory,
-    moveItem,
+    reorderItems,
+    reorderCategories,
     importItems,
     loadCategories,
     undo,
@@ -159,6 +163,23 @@ export default function Home() {
     return () => document.removeEventListener('keydown', handleGlobalKeyDown);
   }, [handleGlobalKeyDown]);
 
+  const categorySensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleCategoryDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const fromIndex = categories.findIndex((c) => c.id === active.id);
+    const toIndex = categories.findIndex((c) => c.id === over.id);
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    reorderCategories(fromIndex, toIndex);
+  }, [categories, reorderCategories]);
+
   if (!loaded) {
     return (
       <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400 dark:text-gray-400">
@@ -271,29 +292,37 @@ export default function Home() {
             />
           </div>
 
-          {visibleCategories.map(({ cat, visibleItems }) => {
-            const origIdx = categories.findIndex((c) => c.id === cat.id);
-            return (
-              <CategorySection
-                key={cat.id}
-                category={cat}
-                visibleItems={visibleItems}
-                onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
-                onAddItem={(label, tag, note) => addItem(cat.id, label, tag, note)}
-                onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
-                onRemoveCategory={() => removeCategory(cat.id)}
-                onRenameCategory={(newName) => renameCategory(cat.id, newName)}
-                onBulkToggle={() => bulkToggleCategory(cat.id)}
-                onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}
-                onNoteChange={(itemId, note) => updateNote(cat.id, itemId, note)}
-                onMoveItem={(itemId, direction) => moveItem(cat.id, itemId, direction)}
-                onQuantityChange={(itemId, qty) => updateQuantity(cat.id, itemId, qty)}
-                onUpdateIcon={(icon) => updateCategoryIcon(cat.id, icon)}
-                onMoveUp={origIdx > 0 ? () => moveCategory(cat.id, 'up') : undefined}
-                onMoveDown={origIdx < categories.length - 1 ? () => moveCategory(cat.id, 'down') : undefined}
-              />
-            );
-          })}
+          <DndContext
+            id="categories"
+            sensors={categorySensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleCategoryDragEnd}
+          >
+            <SortableContext
+              items={visibleCategories.map(({ cat }) => cat.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {visibleCategories.map(({ cat, visibleItems }) => (
+                <SortableCategory key={cat.id} id={cat.id}>
+                  <CategorySection
+                    category={cat}
+                    visibleItems={visibleItems}
+                    onToggleItem={(itemId) => toggleItem(cat.id, itemId)}
+                    onAddItem={(label, tag, note) => addItem(cat.id, label, tag, note)}
+                    onRemoveItem={(itemId) => removeItem(cat.id, itemId)}
+                    onRemoveCategory={() => removeCategory(cat.id)}
+                    onRenameCategory={(newName) => renameCategory(cat.id, newName)}
+                    onBulkToggle={() => bulkToggleCategory(cat.id)}
+                    onRenameItem={(itemId, newLabel) => renameItem(cat.id, itemId, newLabel)}
+                    onNoteChange={(itemId, note) => updateNote(cat.id, itemId, note)}
+                    onReorderItems={(from, to) => reorderItems(cat.id, from, to)}
+                    onQuantityChange={(itemId, qty) => updateQuantity(cat.id, itemId, qty)}
+                    onUpdateIcon={(icon) => updateCategoryIcon(cat.id, icon)}
+                  />
+                </SortableCategory>
+              ))}
+            </SortableContext>
+          </DndContext>
 
           <div className="print-hide flex flex-col gap-3">
             <AddCategoryForm onAdd={addCategory} />

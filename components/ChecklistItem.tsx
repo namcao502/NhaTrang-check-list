@@ -14,8 +14,6 @@ interface Props {
   onNoteChange: (note: string) => void;
   quantity?: number;
   onQuantityChange?: (quantity: number) => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
 }
 
 export default function ChecklistItem({
@@ -30,8 +28,6 @@ export default function ChecklistItem({
   onNoteChange,
   quantity,
   onQuantityChange,
-  onMoveUp,
-  onMoveDown,
 }: Props) {
   const [editingLabel, setEditingLabel] = useState(false);
   const [labelDraft, setLabelDraft] = useState(label);
@@ -193,25 +189,6 @@ export default function ChecklistItem({
             +
           </button>
         </div>
-      )}
-
-      {onMoveUp && (
-        <button
-          aria-label="Di chuyển mục lên"
-          onClick={onMoveUp}
-          className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-        >
-          ↑
-        </button>
-      )}
-      {onMoveDown && (
-        <button
-          aria-label="Di chuyển mục xuống"
-          onClick={onMoveDown}
-          className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-        >
-          ↓
-        </button>
       )}
 
       {tag === "must" && (

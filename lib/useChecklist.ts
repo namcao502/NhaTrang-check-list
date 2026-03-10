@@ -195,6 +195,7 @@ export function useChecklist() {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function moveCategory(categoryId: string, direction: 'up' | 'down') {
     pushUndo();
     setCategories((prev) => {
@@ -236,6 +237,7 @@ export function useChecklist() {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function moveItem(categoryId: string, itemId: string, direction: 'up' | 'down') {
     pushUndo();
     setCategories((prev) =>
@@ -250,6 +252,35 @@ export function useChecklist() {
         return { ...cat, items: next };
       })
     );
+  }
+
+  function reorderItems(categoryId: string, fromIndex: number, toIndex: number) {
+    if (fromIndex === toIndex) return;
+    pushUndo();
+    setCategories((prev) =>
+      prev.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        if (fromIndex < 0 || fromIndex >= cat.items.length) return cat;
+        if (toIndex < 0 || toIndex >= cat.items.length) return cat;
+        const next = [...cat.items];
+        const [moved] = next.splice(fromIndex, 1);
+        next.splice(toIndex, 0, moved);
+        return { ...cat, items: next };
+      })
+    );
+  }
+
+  function reorderCategories(fromIndex: number, toIndex: number) {
+    if (fromIndex === toIndex) return;
+    pushUndo();
+    setCategories((prev) => {
+      if (fromIndex < 0 || fromIndex >= prev.length) return prev;
+      if (toIndex < 0 || toIndex >= prev.length) return prev;
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
   }
 
   function importItems(labels: string[], categoryId: string | null, newCategoryName?: string) {
@@ -320,9 +351,9 @@ export function useChecklist() {
     resetAll,
     loadCategories,
     updateCategoryIcon,
-    moveCategory,
     updateQuantity,
-    moveItem,
+    reorderItems,
+    reorderCategories,
     importItems,
     undo,
     canUndo,

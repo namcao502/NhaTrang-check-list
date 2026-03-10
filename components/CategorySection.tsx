@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { Category, Item } from "@/lib/types";
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import ChecklistItem from "./ChecklistItem";
+import SortableItem from "./SortableItem";
 import AddItemForm from "./AddItemForm";
 import EmojiPicker from "./EmojiPicker";
 import { isValidCollapseState } from "@/lib/validation";
@@ -39,11 +43,9 @@ interface Props {
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
-  onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
+  onReorderItems: (fromIndex: number, toIndex: number) => void;
   onQuantityChange: (itemId: string, quantity: number) => void;
   onUpdateIcon: (icon: string) => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
 }
 
 export default function CategorySection({
@@ -57,11 +59,9 @@ export default function CategorySection({
   onBulkToggle,
   onRenameItem,
   onNoteChange,
-  onMoveItem,
+  onReorderItems,
   onQuantityChange,
   onUpdateIcon,
-  onMoveUp,
-  onMoveDown,
 }: Props) {
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     const state = loadCollapseState();
@@ -111,6 +111,23 @@ export default function CategorySection({
     }
     setEditingName(false);
   }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  const handleItemDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    // Map dragged item IDs back to indices in the FULL category.items array
+    const fromIndex = category.items.findIndex((i) => i.id === active.id);
+    const toIndex = category.items.findIndex((i) => i.id === over.id);
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    onReorderItems(fromIndex, toIndex);
+  }, [category.items, onReorderItems]);
 
   return (
     <section className="glass-card rounded-2xl shadow-lg border border-white/40 dark:border-white/10 overflow-hidden">
@@ -192,24 +209,6 @@ export default function CategorySection({
           <span className="bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-200 rounded-full px-2 py-0.5 text-xs">
             {checked}/{total}
           </span>
-          {onMoveUp && (
-            <button
-              aria-label="Di chuyển lên"
-              onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-              className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
-            >
-              ↑
-            </button>
-          )}
-          {onMoveDown && (
-            <button
-              aria-label="Di chuyển xuống"
-              onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-              className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 transition-colors"
-            >
-              ↓
-            </button>
-          )}
           <button
             aria-label={`Xoá danh mục ${category.name}`}
             onClick={(e) => { e.stopPropagation(); handleDeleteCategory(); }}
@@ -228,29 +227,37 @@ export default function CategorySection({
           {visibleItems.length === 0 ? (
             <p className="text-sm text-gray-400 dark:text-gray-400 px-3 py-2">Chưa có đồ vật nào.</p>
           ) : (
-            <ul>
-              {visibleItems.map((item) => {
-                const origIdx = category.items.findIndex((i) => i.id === item.id);
-                return (
-                  <ChecklistItem
-                    key={item.id}
-                    id={item.id}
-                    label={item.label}
-                    checked={item.checked}
-                    note={item.note}
-                    tag={item.tag}
-                    onToggle={() => onToggleItem(item.id)}
-                    onRemove={() => onRemoveItem(item.id)}
-                    onRename={(newLabel) => onRenameItem(item.id, newLabel)}
-                    onNoteChange={(note) => onNoteChange(item.id, note)}
-                    quantity={item.quantity}
-                    onQuantityChange={(qty) => onQuantityChange(item.id, qty)}
-                    onMoveUp={origIdx > 0 ? () => onMoveItem(item.id, 'up') : undefined}
-                    onMoveDown={origIdx < category.items.length - 1 ? () => onMoveItem(item.id, 'down') : undefined}
-                  />
-                );
-              })}
-            </ul>
+            <DndContext
+              id={`items-${category.id}`}
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleItemDragEnd}
+            >
+              <SortableContext
+                items={visibleItems.map((i) => i.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul>
+                  {visibleItems.map((item) => (
+                    <SortableItem key={item.id} id={item.id}>
+                      <ChecklistItem
+                        id={item.id}
+                        label={item.label}
+                        checked={item.checked}
+                        note={item.note}
+                        tag={item.tag}
+                        onToggle={() => onToggleItem(item.id)}
+                        onRemove={() => onRemoveItem(item.id)}
+                        onRename={(newLabel) => onRenameItem(item.id, newLabel)}
+                        onNoteChange={(note) => onNoteChange(item.id, note)}
+                        quantity={item.quantity}
+                        onQuantityChange={(qty) => onQuantityChange(item.id, qty)}
+                      />
+                    </SortableItem>
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
           )}
           <div className="print-hide">
             <AddItemForm onAdd={(label, tag, note) => onAddItem(label, tag, note)} />
