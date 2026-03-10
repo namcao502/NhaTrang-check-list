@@ -92,10 +92,9 @@ function makeProps(overrides: Partial<{
   onBulkToggle: () => void;
   onRenameItem: (itemId: string, newLabel: string) => void;
   onNoteChange: (itemId: string, note: string) => void;
-  onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
+  onReorderItems: (fromIndex: number, toIndex: number) => void;
+  onQuantityChange: (itemId: string, quantity: number) => void;
   onUpdateIcon: (icon: string) => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
 }> = {}) {
   const category = overrides.category ?? baseCategory;
   return {
@@ -110,7 +109,8 @@ function makeProps(overrides: Partial<{
     onBulkToggle: jest.fn(),
     onRenameItem: jest.fn(),
     onNoteChange: jest.fn(),
-    onMoveItem: jest.fn(),
+    onReorderItems: jest.fn(),
+    onQuantityChange: jest.fn(),
     onUpdateIcon: jest.fn(),
     ...overrides,
   };
@@ -444,46 +444,14 @@ describe("CategorySection — visibleItems", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Move-up / move-down buttons
+// Drag handle (replaced move buttons)
 // ---------------------------------------------------------------------------
 
-describe("CategorySection — move buttons", () => {
-  it("renders the up arrow button when onMoveUp is provided", () => {
-    render(<CategorySection {...makeProps({ onMoveUp: jest.fn() })} />);
-    expect(screen.getByRole("button", { name: "Di chuyển lên" })).toBeInTheDocument();
-  });
-
-  it("renders the down arrow button when onMoveDown is provided", () => {
-    render(<CategorySection {...makeProps({ onMoveDown: jest.fn() })} />);
-    expect(screen.getByRole("button", { name: "Di chuyển xuống" })).toBeInTheDocument();
-  });
-
-  it("does not render the up arrow button when onMoveUp is undefined", () => {
-    render(<CategorySection {...makeProps({ onMoveUp: undefined })} />);
-    expect(screen.queryByRole("button", { name: "Di chuyển lên" })).not.toBeInTheDocument();
-  });
-
-  it("does not render the down arrow button when onMoveDown is undefined", () => {
-    render(<CategorySection {...makeProps({ onMoveDown: undefined })} />);
-    expect(screen.queryByRole("button", { name: "Di chuyển xuống" })).not.toBeInTheDocument();
-  });
-
-  it("calls onMoveUp when the up arrow button is clicked", async () => {
-    const onMoveUp = jest.fn();
-    render(<CategorySection {...makeProps({ onMoveUp })} />);
-
-    await userEvent.click(screen.getByRole("button", { name: "Di chuyển lên" }));
-
-    expect(onMoveUp).toHaveBeenCalledTimes(1);
-  });
-
-  it("calls onMoveDown when the down arrow button is clicked", async () => {
-    const onMoveDown = jest.fn();
-    render(<CategorySection {...makeProps({ onMoveDown })} />);
-
-    await userEvent.click(screen.getByRole("button", { name: "Di chuyển xuống" }));
-
-    expect(onMoveDown).toHaveBeenCalledTimes(1);
+describe("CategorySection — drag handle", () => {
+  it("renders a drag handle for item reordering", () => {
+    render(<CategorySection {...makeProps()} />);
+    const handles = screen.getAllByRole("button", { name: /keo de sap xep/i });
+    expect(handles.length).toBeGreaterThan(0);
   });
 });
 

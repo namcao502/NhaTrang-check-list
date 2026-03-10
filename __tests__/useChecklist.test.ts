@@ -396,75 +396,50 @@ describe("useChecklist — resetAll", () => {
 });
 
 // ---------------------------------------------------------------------------
-// moveCategory
+// reorderCategories (replaced moveCategory)
 // ---------------------------------------------------------------------------
 
-describe("useChecklist — moveCategory", () => {
-  it("moves a category up by swapping it with the one above", async () => {
+describe("useChecklist — reorderCategories", () => {
+  it("reorders a category from index 1 to index 0", async () => {
     const result = await mountHook();
     const secondId = result.current.categories[1].id;
 
     act(() => {
-      result.current.moveCategory(secondId, "up");
+      result.current.reorderCategories(1, 0);
     });
 
     expect(result.current.categories[0].id).toBe(secondId);
   });
 
-  it("moves a category down by swapping it with the one below", async () => {
+  it("reorders a category from index 0 to index 1", async () => {
     const result = await mountHook();
     const firstId = result.current.categories[0].id;
 
     act(() => {
-      result.current.moveCategory(firstId, "down");
+      result.current.reorderCategories(0, 1);
     });
 
     expect(result.current.categories[1].id).toBe(firstId);
   });
 
-  it("does not change order when moving the first category up (boundary)", async () => {
+  it("does nothing when fromIndex equals toIndex", async () => {
     const result = await mountHook();
     const originalIds = result.current.categories.map((c) => c.id);
 
     act(() => {
-      result.current.moveCategory(originalIds[0], "up");
+      result.current.reorderCategories(0, 0);
     });
 
     const newIds = result.current.categories.map((c) => c.id);
     expect(newIds).toEqual(originalIds);
   });
 
-  it("does not change order when moving the last category down (boundary)", async () => {
-    const result = await mountHook();
-    const originalIds = result.current.categories.map((c) => c.id);
-    const lastId = originalIds[originalIds.length - 1];
-
-    act(() => {
-      result.current.moveCategory(lastId, "down");
-    });
-
-    const newIds = result.current.categories.map((c) => c.id);
-    expect(newIds).toEqual(originalIds);
-  });
-
-  it("does nothing when categoryId does not exist", async () => {
-    const result = await mountHook();
-    const originalIds = result.current.categories.map((c) => c.id);
-
-    act(() => {
-      result.current.moveCategory("non-existent-cat", "up");
-    });
-
-    const newIds = result.current.categories.map((c) => c.id);
-    expect(newIds).toEqual(originalIds);
-  });
-
-  it("preserves category count after moving", async () => {
+  it("preserves category count after reordering", async () => {
     const result = await mountHook();
     const count = result.current.categories.length;
 
     act(() => {
-      result.current.moveCategory(result.current.categories[0].id, "down");
+      result.current.reorderCategories(0, 2);
     });
 
     expect(result.current.categories).toHaveLength(count);

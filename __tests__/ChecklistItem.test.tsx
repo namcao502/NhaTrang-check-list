@@ -177,18 +177,16 @@ describe("ChecklistItem — tag badge DOM structure", () => {
     expect(contentDiv.contains(deleteBtn)).toBe(false);
   });
 
-  it("move buttons are NOT inside the flex-1 content div", () => {
+  it("delete button is NOT inside the flex-1 content div", () => {
     render(
       <ChecklistItem
-        {...makeProps({ tag: "must", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
+        {...makeProps({ tag: "must" })}
       />
     );
     const contentDiv = document.querySelector("li > div.flex-1")!;
-    const moveUpBtn = screen.getByRole("button", { name: /di chuyển mục lên/i });
-    const moveDownBtn = screen.getByRole("button", { name: /di chuyển mục xuống/i });
+    const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
 
-    expect(contentDiv.contains(moveUpBtn)).toBe(false);
-    expect(contentDiv.contains(moveDownBtn)).toBe(false);
+    expect(contentDiv.contains(deleteBtn)).toBe(false);
   });
 
   it("label span without a tag has no badge sibling at the <li> level", () => {
@@ -253,98 +251,8 @@ describe("ChecklistItem — tag badge DOM structure", () => {
 // Expected order: checkbox, content div, move-up, move-down, tag badge, delete
 // ---------------------------------------------------------------------------
 
-describe("ChecklistItem — tag badge ordering (FEAT-tag-order)", () => {
-  it("tag badge appears after move-up and move-down buttons in DOM order", () => {
-    const { container } = render(
-      <ChecklistItem
-        {...makeProps({ tag: "must", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
-      />
-    );
-    const li = container.querySelector("li")!;
-    const children = Array.from(li.children);
-
-    const moveUpBtn = screen.getByRole("button", { name: /di chuyển mục lên/i });
-    const moveDownBtn = screen.getByRole("button", { name: /di chuyển mục xuống/i });
-    const badge = screen.getByText("Quan trọng");
-
-    const moveUpIndex = children.indexOf(moveUpBtn);
-    const moveDownIndex = children.indexOf(moveDownBtn);
-    const badgeIndex = children.indexOf(badge);
-
-    expect(badgeIndex).toBeGreaterThan(moveUpIndex);
-    expect(badgeIndex).toBeGreaterThan(moveDownIndex);
-  });
-
+describe("ChecklistItem — tag badge ordering", () => {
   it("tag badge appears before the delete button in DOM order", () => {
-    const { container } = render(
-      <ChecklistItem
-        {...makeProps({ tag: "must", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
-      />
-    );
-    const li = container.querySelector("li")!;
-    const children = Array.from(li.children);
-
-    const badge = screen.getByText("Quan trọng");
-    const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
-
-    const badgeIndex = children.indexOf(badge);
-    const deleteIndex = children.indexOf(deleteBtn);
-
-    expect(badgeIndex).toBeLessThan(deleteIndex);
-  });
-
-  it("full DOM order is: checkbox, content, move-up, move-down, badge, delete", () => {
-    const { container } = render(
-      <ChecklistItem
-        {...makeProps({ tag: "must", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
-      />
-    );
-    const li = container.querySelector("li")!;
-    const children = Array.from(li.children);
-
-    const checkbox = screen.getByRole("checkbox");
-    const contentDiv = container.querySelector("li > div.flex-1")!;
-    const moveUpBtn = screen.getByRole("button", { name: /di chuyển mục lên/i });
-    const moveDownBtn = screen.getByRole("button", { name: /di chuyển mục xuống/i });
-    const badge = screen.getByText("Quan trọng");
-    const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
-
-    const checkboxIndex = children.indexOf(checkbox);
-    const contentIndex = children.indexOf(contentDiv);
-    const moveUpIndex = children.indexOf(moveUpBtn);
-    const moveDownIndex = children.indexOf(moveDownBtn);
-    const badgeIndex = children.indexOf(badge);
-    const deleteIndex = children.indexOf(deleteBtn);
-
-    expect(checkboxIndex).toBeLessThan(contentIndex);
-    expect(contentIndex).toBeLessThan(moveUpIndex);
-    expect(moveUpIndex).toBeLessThan(moveDownIndex);
-    expect(moveDownIndex).toBeLessThan(badgeIndex);
-    expect(badgeIndex).toBeLessThan(deleteIndex);
-  });
-
-  it("'opt' badge also appears after move buttons and before delete", () => {
-    const { container } = render(
-      <ChecklistItem
-        {...makeProps({ tag: "opt", onMoveUp: jest.fn(), onMoveDown: jest.fn() })}
-      />
-    );
-    const li = container.querySelector("li")!;
-    const children = Array.from(li.children);
-
-    const moveDownBtn = screen.getByRole("button", { name: /di chuyển mục xuống/i });
-    const badge = screen.getByText("Nên có");
-    const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
-
-    const moveDownIndex = children.indexOf(moveDownBtn);
-    const badgeIndex = children.indexOf(badge);
-    const deleteIndex = children.indexOf(deleteBtn);
-
-    expect(badgeIndex).toBeGreaterThan(moveDownIndex);
-    expect(badgeIndex).toBeLessThan(deleteIndex);
-  });
-
-  it("without move buttons, badge still appears before delete", () => {
     const { container } = render(
       <ChecklistItem {...makeProps({ tag: "must" })} />
     );
@@ -352,6 +260,22 @@ describe("ChecklistItem — tag badge ordering (FEAT-tag-order)", () => {
     const children = Array.from(li.children);
 
     const badge = screen.getByText("Quan trọng");
+    const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
+
+    const badgeIndex = children.indexOf(badge);
+    const deleteIndex = children.indexOf(deleteBtn);
+
+    expect(badgeIndex).toBeLessThan(deleteIndex);
+  });
+
+  it("'opt' badge also appears before delete", () => {
+    const { container } = render(
+      <ChecklistItem {...makeProps({ tag: "opt" })} />
+    );
+    const li = container.querySelector("li")!;
+    const children = Array.from(li.children);
+
+    const badge = screen.getByText("Nên có");
     const deleteBtn = screen.getByRole("button", { name: /xoá sunscreen/i });
 
     const badgeIndex = children.indexOf(badge);

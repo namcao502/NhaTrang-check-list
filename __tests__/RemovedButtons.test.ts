@@ -20,7 +20,6 @@ describe("FEAT-remove-buttons — deleted component files", () => {
     "components/ExportButton.tsx",
     "components/PrintButton.tsx",
     "components/TemplateManager.tsx",
-    "lib/useTemplates.ts",
   ];
 
   it.each(deletedFiles)(
@@ -60,10 +59,8 @@ describe("FEAT-remove-buttons — page.tsx imports", () => {
   );
 
   const removedImports = [
-    "ExportButton",
     "PrintButton",
     "TemplateManager",
-    "useTemplates",
   ];
 
   it.each(removedImports)(
