@@ -1,4 +1,5 @@
 import type { WeatherData, WeatherSuggestion } from './types';
+import { WEATHER, WEATHER_SUGGESTIONS } from './constants';
 
 // WMO Weather interpretation codes mapped to Vietnamese descriptions
 export const WMO_WEATHER_CODES: Record<number, { text: string; emoji: string }> = {
@@ -33,7 +34,7 @@ export const WMO_WEATHER_CODES: Record<number, { text: string; emoji: string }> 
 };
 
 export function getWeatherDescription(code: number): { text: string; emoji: string } {
-  return WMO_WEATHER_CODES[code] ?? { text: 'Không rõ', emoji: '❓' };
+  return WMO_WEATHER_CODES[code] ?? { text: WEATHER.UNKNOWN, emoji: '❓' };
 }
 
 interface OpenMeteoResponse {
@@ -102,36 +103,36 @@ export function getWeatherSuggestions(data: WeatherData): WeatherSuggestion[] {
 
   // Rain-related suggestions
   if (data.rain_probability >= 50 || (data.weathercode >= 51 && data.weathercode <= 67) || (data.weathercode >= 80 && data.weathercode <= 82)) {
-    suggestions.push({ text: 'Mang ao mua!', icon: '🌂' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.RAIN_JACKET, icon: '🌂' });
   }
 
   // Hot weather suggestions
   if (data.temperature_max >= 32) {
-    suggestions.push({ text: 'Nho kem chong nang!', icon: '🧴' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.SUNSCREEN, icon: '🧴' });
   }
 
   if (data.temperature_max >= 35) {
-    suggestions.push({ text: 'Mang mu rong vanh', icon: '👒' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.WIDE_HAT, icon: '👒' });
   }
 
   // Cool weather
   if (data.temperature_min <= 20) {
-    suggestions.push({ text: 'Mang ao khoac mong', icon: '🧥' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.LIGHT_JACKET, icon: '🧥' });
   }
 
   // Thunderstorm
   if (data.weathercode >= 95) {
-    suggestions.push({ text: 'Co the co giong, can than!', icon: '⚡' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.THUNDERSTORM, icon: '⚡' });
   }
 
   // Foggy
   if (data.weathercode === 45 || data.weathercode === 48) {
-    suggestions.push({ text: 'Troi suong mu, han che di bien', icon: '🌫️' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.FOG_WARNING, icon: '🌫️' });
   }
 
   // Good beach weather
   if (data.weathercode <= 1 && data.temperature_max >= 28 && data.rain_probability < 30) {
-    suggestions.push({ text: 'Thoi tiet ly tuong di bien!', icon: '🏖️' });
+    suggestions.push({ text: WEATHER_SUGGESTIONS.IDEAL_BEACH, icon: '🏖️' });
   }
 
   return suggestions;

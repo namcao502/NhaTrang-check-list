@@ -3,6 +3,7 @@
 import { useWeather } from '@/lib/useWeather';
 import { getWeatherDescription } from '@/lib/weatherApi';
 import DestinationInput from '@/components/DestinationInput';
+import { WEATHER } from '@/lib/constants';
 
 interface Props {
   departureDate: string | null;
@@ -19,14 +20,14 @@ export default function WeatherWidget({ departureDate }: Props) {
     suggestions,
   } = useWeather(departureDate);
 
-  const dateLabel = departureDate ? `ngay ${departureDate}` : 'hom nay';
+  const dateLabel = departureDate ? `ngày ${departureDate}` : 'hôm nay';
 
   return (
     <div className="glass-card rounded-2xl shadow-lg border border-white/40 dark:border-white/10 px-5 py-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-base font-medium text-gray-600 dark:text-gray-300 font-playfair">
-            Thoi tiet
+            {WEATHER.TITLE}
           </span>
           <DestinationInput
             destination={destination}
@@ -59,7 +60,7 @@ export default function WeatherWidget({ departureDate }: Props) {
       {/* Forecast unavailable (>7 days out) */}
       {forecastUnavailable && !loading && !error && (
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Du bao chua co (chi ho tro 7 ngay toi)
+          {WEATHER.FORECAST_UNAVAILABLE}
         </div>
       )}
 
@@ -86,7 +87,7 @@ export default function WeatherWidget({ departureDate }: Props) {
                 {weather.rain_probability}%
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Mua
+                {WEATHER.RAIN_LABEL}
               </p>
             </div>
           </div>

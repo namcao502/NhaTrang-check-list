@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import type { Destination } from '@/lib/types';
 import { geocodeCity } from '@/lib/weatherApi';
+import { DESTINATION } from '@/lib/constants';
 
 interface Props {
   destination: Destination;
@@ -41,10 +42,10 @@ export default function DestinationInput({ destination, onDestinationChange }: P
         onDestinationChange({ name: result.name, lat: result.lat, lon: result.lon });
         setEditing(false);
       } else {
-        setGeocodeError('Khong tim thay dia diem');
+        setGeocodeError(DESTINATION.NOT_FOUND);
       }
     } catch {
-      setGeocodeError('Loi tim dia diem');
+      setGeocodeError(DESTINATION.ERROR);
     } finally {
       setGeocoding(false);
     }
@@ -83,11 +84,11 @@ export default function DestinationInput({ destination, onDestinationChange }: P
           onBlur={handleBlur}
           disabled={geocoding}
           className="rounded-lg border border-ocean-300 dark:border-ocean-600 bg-white/80 dark:bg-slate-700/80 px-2 py-1 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-ocean-300 dark:focus:ring-ocean-500 transition w-32"
-          placeholder="Nhap ten thanh pho..."
+          placeholder={DESTINATION.PLACEHOLDER}
         />
         {geocoding && (
           <span className="text-xs text-gray-400 dark:text-gray-400 animate-pulse">
-            Dang tim...
+            {DESTINATION.SEARCHING}
           </span>
         )}
         {geocodeError && (
@@ -104,7 +105,7 @@ export default function DestinationInput({ destination, onDestinationChange }: P
       type="button"
       onClick={handleStartEdit}
       className="text-sm font-medium text-ocean-600 dark:text-ocean-300 hover:text-ocean-700 dark:hover:text-ocean-200 transition-colors underline decoration-dotted underline-offset-2"
-      title="Thay doi dia diem"
+      title={DESTINATION.CHANGE_ARIA}
     >
       {destination.name}
     </button>

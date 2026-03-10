@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { WeatherData, Destination, WeatherSuggestion } from './types';
 import { isValidDestination, isValidWeatherCache } from './validation';
 import { fetchWeather, getWeatherSuggestions } from './weatherApi';
+import { WEATHER } from './constants';
 
 const DESTINATION_KEY = 'beach-destination';
 const CACHE_KEY = 'beach-weather-cache';
@@ -132,28 +133,43 @@ export function useWeather(departureDate: string | null): UseWeatherResult {
     setLoading(true);
     setError(null);
 
+    // Safety timeout: if fetch hangs (e.g. CSP blocks it), clear loading after 6s
+    const safetyTimeout = setTimeout(() => {
+      if (!cancelled) {
+        setLoading(false);
+        setError(WEATHER.FETCH_ERROR);
+      }
+    }, 6000);
+
     fetchWeather(destination.lat, destination.lon, targetDate)
       .then((data) => {
         if (cancelled) return;
+        clearTimeout(safetyTimeout);
         setWeather(data);
         setError(null);
         saveCachedWeather(data, destination.lat, destination.lon, targetDate);
       })
-      .catch((err: Error) => {
+      .catch((err: unknown) => {
         if (cancelled) return;
-        if (err.message === 'DATE_OUT_OF_RANGE') {
+        clearTimeout(safetyTimeout);
+        const message = err instanceof Error ? err.message : String(err);
+        if (message === 'DATE_OUT_OF_RANGE') {
           setForecastUnavailable(true);
           setWeather(null);
         } else {
-          setError('Khong the tai thoi tiet');
+          setError(WEATHER.FETCH_ERROR);
         }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          clearTimeout(safetyTimeout);
+          setLoading(false);
+        }
       });
 
     return () => {
       cancelled = true;
+      clearTimeout(safetyTimeout);
     };
   }, [destination.lat, destination.lon, departureDate]);
 

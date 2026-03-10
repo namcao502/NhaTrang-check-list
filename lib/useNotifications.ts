@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { isValidNotifiedDates } from "./validation";
+import { NOTIFICATION } from "./constants";
 
 const STORAGE_KEY = "beach-notifications";
 const NOTIFIED_KEY = "beach-notified-dates";
@@ -40,13 +41,13 @@ export function useNotifications(departureDate: string | null) {
     }
 
     const notifications: { key: string; message: string }[] = [];
-    if (diffDays === 3) notifications.push({ key: `${departureDate}-3d`, message: 'Con 3 ngay — nho chuan bi!' });
-    if (diffDays === 1) notifications.push({ key: `${departureDate}-1d`, message: 'Ngay mai di roi! Kiem tra lai danh sach.' });
-    if (diffDays === 0 || todayStr === departureDate) notifications.push({ key: `${departureDate}-0d`, message: 'Hom nay la ngay di!' });
+    if (diffDays === 3) notifications.push({ key: `${departureDate}-3d`, message: NOTIFICATION.THREE_DAYS });
+    if (diffDays === 1) notifications.push({ key: `${departureDate}-1d`, message: NOTIFICATION.TOMORROW });
+    if (diffDays === 0 || todayStr === departureDate) notifications.push({ key: `${departureDate}-0d`, message: NOTIFICATION.TODAY });
 
     for (const n of notifications) {
       if (!notified.includes(n.key)) {
-        new Notification('Nha Trang Packing List', { body: n.message });
+        new Notification(NOTIFICATION.TITLE, { body: n.message });
         notified.push(n.key);
       }
     }
