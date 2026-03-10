@@ -20,6 +20,7 @@ import TripHistoryModal from "@/components/TripHistoryModal";
 import { useTripHistory } from "@/lib/useTripHistory";
 import { useSuggestions } from "@/lib/useSuggestions";
 import SmartSuggestions from "@/components/SmartSuggestions";
+import WeatherWidget from "@/components/WeatherWidget";
 import type { Suggestion } from "@/lib/suggestionsData";
 
 export default function Home() {
@@ -212,6 +213,9 @@ export default function Home() {
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm">🏖️ Biển · 🎢 Vinwonders · 🦁 Safari</p>
           <CountdownBanner />
+          <div className="mt-4">
+            <WeatherWidget departureDate={departureDate} />
+          </div>
         </header>
 
         {allDone && (

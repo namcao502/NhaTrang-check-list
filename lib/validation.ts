@@ -1,4 +1,4 @@
-import type { Category, Item, Template, ArchivedTrip } from './types';
+import type { Category, Item, Template, ArchivedTrip, Destination, WeatherCache } from './types';
 
 function isValidItem(v: unknown): v is Item {
   if (typeof v !== 'object' || v === null) return false;
@@ -85,6 +85,41 @@ export function isValidTripHistory(data: unknown): data is ArchivedTrip[] {
 
 export function isValidDismissedSuggestions(data: unknown): data is string[] {
   return Array.isArray(data) && data.every((v) => typeof v === 'string');
+}
+
+export function isValidDestination(data: unknown): data is Destination {
+  if (typeof data !== 'object' || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  return (
+    typeof obj.name === 'string' &&
+    obj.name.length > 0 &&
+    typeof obj.lat === 'number' &&
+    typeof obj.lon === 'number' &&
+    obj.lat >= -90 &&
+    obj.lat <= 90 &&
+    obj.lon >= -180 &&
+    obj.lon <= 180
+  );
+}
+
+export function isValidWeatherCache(data: unknown): data is WeatherCache {
+  if (typeof data !== 'object' || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  if (
+    typeof obj.lat !== 'number' ||
+    typeof obj.lon !== 'number' ||
+    typeof obj.date !== 'string' ||
+    typeof obj.timestamp !== 'number'
+  ) return false;
+  const d = obj.data;
+  if (typeof d !== 'object' || d === null) return false;
+  const weather = d as Record<string, unknown>;
+  return (
+    typeof weather.temperature_max === 'number' &&
+    typeof weather.temperature_min === 'number' &&
+    typeof weather.weathercode === 'number' &&
+    typeof weather.rain_probability === 'number'
+  );
 }
 
 export function isValidDateString(value: string): boolean {
