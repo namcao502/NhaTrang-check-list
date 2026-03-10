@@ -3,10 +3,11 @@
 interface Props {
   checked: number;
   total: number;
-  onReset: () => void;
+  onResetRequest: () => void;
+  onShowHistory: () => void;
 }
 
-export default function ChecklistStats({ checked, total, onReset }: Props) {
+export default function ChecklistStats({ checked, total, onResetRequest, onShowHistory }: Props) {
   const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
   const allDone = total > 0 && checked === total;
 
@@ -16,12 +17,20 @@ export default function ChecklistStats({ checked, total, onReset }: Props) {
         <span className="text-base font-medium text-gray-600 dark:text-gray-300">
           {allDone ? "🏖️ Sẵn sàng ra biển rồi!" : `Đã chuẩn bị ${checked}/${total} đồ vật`}
         </span>
-        <button
-          onClick={onReset}
-          className="print-hide text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
-        >
-          Đặt lại
-        </button>
+        <div className="print-hide flex items-center gap-2">
+          <button
+            onClick={onShowHistory}
+            className="text-sm px-2 py-1 text-gray-400 hover:text-ocean-600 dark:text-gray-400 dark:hover:text-ocean-400 transition-colors"
+          >
+            Lịch sử
+          </button>
+          <button
+            onClick={onResetRequest}
+            className="text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+          >
+            Đặt lại
+          </button>
+        </div>
       </div>
       <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3">
         <div

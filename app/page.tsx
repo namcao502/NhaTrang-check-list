@@ -14,6 +14,9 @@ import AmbientFireworks from "@/components/AmbientFireworks";
 import ExportButtons from "@/components/ExportButtons";
 import ImportTextModal from "@/components/ImportTextModal";
 import TemplatePicker from "@/components/TemplatePicker";
+import ArchiveConfirmModal from "@/components/ArchiveConfirmModal";
+import TripHistoryModal from "@/components/TripHistoryModal";
+import { useTripHistory } from "@/lib/useTripHistory";
 
 export default function Home() {
   const {
@@ -48,10 +51,14 @@ export default function Home() {
     deleteTemplate,
   } = useTemplates();
 
+  const { trips, archiveTrip, deleteTrip } = useTripHistory();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [mustOnly, setMustOnly] = useState(false);
   const [hideChecked, setHideChecked] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -180,7 +187,8 @@ export default function Home() {
             <ChecklistStats
               checked={checkedItems}
               total={totalItems}
-              onReset={resetAll}
+              onResetRequest={() => setShowArchiveModal(true)}
+              onShowHistory={() => setShowHistoryModal(true)}
             />
           </div>
 
@@ -253,6 +261,29 @@ export default function Home() {
           categories={categories}
           onImport={importItems}
           onClose={() => setShowImportModal(false)}
+        />
+      )}
+
+      {showArchiveModal && (
+        <ArchiveConfirmModal
+          onArchiveAndReset={(name) => {
+            archiveTrip(name, categories);
+            resetAll();
+            setShowArchiveModal(false);
+          }}
+          onResetWithoutArchive={() => {
+            resetAll();
+            setShowArchiveModal(false);
+          }}
+          onCancel={() => setShowArchiveModal(false)}
+        />
+      )}
+
+      {showHistoryModal && (
+        <TripHistoryModal
+          trips={trips}
+          onDeleteTrip={deleteTrip}
+          onClose={() => setShowHistoryModal(false)}
         />
       )}
 

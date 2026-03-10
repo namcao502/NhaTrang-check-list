@@ -20,3 +20,12 @@ export interface Template {
   categories: Category[];
   createdAt: string;
 }
+
+export interface ArchivedTrip {
+  id: string;
+  name: string;
+  date: string;
+  categories: Category[];
+  checkedCount: number;
+  totalCount: number;
+}

@@ -1,4 +1,4 @@
-import type { Category, Item, Template } from './types';
+import type { Category, Item, Template, ArchivedTrip } from './types';
 
 function isValidItem(v: unknown): v is Item {
   if (typeof v !== 'object' || v === null) return false;
@@ -59,6 +59,28 @@ export function isValidTemplate(data: unknown): data is Template {
 export function isValidTemplates(data: unknown): data is Template[] {
   if (!Array.isArray(data)) return false;
   return data.every(isValidTemplate);
+}
+
+function isValidArchivedTrip(data: unknown): data is ArchivedTrip {
+  if (typeof data !== 'object' || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  return (
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.date === 'string' &&
+    typeof obj.checkedCount === 'number' &&
+    Number.isInteger(obj.checkedCount) &&
+    obj.checkedCount >= 0 &&
+    typeof obj.totalCount === 'number' &&
+    Number.isInteger(obj.totalCount) &&
+    obj.totalCount >= 0 &&
+    isValidCategories(obj.categories)
+  );
+}
+
+export function isValidTripHistory(data: unknown): data is ArchivedTrip[] {
+  if (!Array.isArray(data)) return false;
+  return data.every(isValidArchivedTrip);
 }
 
 export function isValidDateString(value: string): boolean {
