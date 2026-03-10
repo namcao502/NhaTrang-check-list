@@ -26,6 +26,7 @@ import { useSuggestions } from "@/lib/useSuggestions";
 import SmartSuggestions from "@/components/SmartSuggestions";
 import WeatherWidget from "@/components/WeatherWidget";
 import type { Suggestion } from "@/lib/suggestionsData";
+import { COMMON, HEADER, EXPORT, IMPORT } from "@/lib/constants";
 
 export default function Home() {
   const {
@@ -183,7 +184,7 @@ export default function Home() {
   if (!loaded) {
     return (
       <main className="max-w-xl mx-auto px-4 py-12 text-center text-gray-400 dark:text-gray-400">
-        Đang tải...
+        {COMMON.LOADING}
       </main>
     );
   }
@@ -227,12 +228,12 @@ export default function Home() {
             <ThemeToggle />
           </div>
           <div className="inline-block bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 text-sm font-medium px-4 py-1.5 rounded-full mb-3">
-            ✈️ Kế hoạch chuyến đi
+            {HEADER.TRIP_BADGE}
           </div>
           <h1 className="text-4xl font-bold font-playfair text-gray-900 dark:text-gray-100 mb-2">
             Nha Trang Packing List
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">🏖️ Biển · 🎢 Vinwonders · 🦁 Safari</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">{HEADER.SUBTITLE}</p>
           <CountdownBanner />
           <div className="mt-4">
             <WeatherWidget departureDate={departureDate} />
@@ -241,7 +242,7 @@ export default function Home() {
 
         {allDone && (
           <div className="mb-4 text-center bg-green-50 border border-green-200 dark:bg-green-900/40 dark:border-green-800 rounded-2xl px-5 py-4 text-green-700 dark:text-green-200 font-medium">
-            🎉 Đã chuẩn bị xong! Chúc cả gia đình có chuyến đi tuyệt vời! 🌊
+            {HEADER.ALL_DONE}
           </div>
         )}
 
@@ -264,7 +265,7 @@ export default function Home() {
               onClick={() => setShowPackingCard(true)}
               className="rounded-xl px-3 py-2 text-sm font-medium transition-colors bg-white/70 dark:bg-slate-700/70 text-ocean-600 dark:text-ocean-300 border border-ocean-200 dark:border-ocean-700 hover:bg-ocean-50 hover:text-ocean-700 dark:hover:bg-ocean-700/30 dark:hover:text-ocean-200"
             >
-              Chia se tien do
+              {EXPORT.SHARE_PROGRESS}
             </button>
           </div>
 
@@ -335,7 +336,7 @@ export default function Home() {
               onClick={() => setShowImportModal(true)}
               className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-2xl text-base text-gray-400 dark:text-gray-400 hover:border-ocean-400 hover:text-ocean-600 dark:hover:border-ocean-500 dark:hover:text-ocean-400 transition-colors"
             >
-              Nhap danh sach
+              {IMPORT.BUTTON}
             </button>
           </div>
         </div>

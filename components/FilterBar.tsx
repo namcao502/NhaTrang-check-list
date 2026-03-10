@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
+import { FILTER } from "@/lib/constants";
 
 interface Props {
   searchQuery: string;
@@ -22,7 +23,7 @@ const FilterBar = forwardRef<HTMLInputElement, Props>(function FilterBar(
         type="text"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Tìm kiếm đồ vật..."
+        placeholder={FILTER.SEARCH_PLACEHOLDER}
         className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-300 dark:focus:ring-ocean-500 transition"
       />
       <div className="flex gap-2">
@@ -35,7 +36,7 @@ const FilterBar = forwardRef<HTMLInputElement, Props>(function FilterBar(
               : "bg-white/70 dark:bg-slate-700/70 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-coral-50 hover:text-coral-600 dark:hover:bg-coral-600/30 dark:hover:text-coral-500"
           }`}
         >
-          Chỉ quan trọng
+          {FILTER.MUST_ONLY}
         </button>
         <button
           type="button"
@@ -46,7 +47,7 @@ const FilterBar = forwardRef<HTMLInputElement, Props>(function FilterBar(
               : "bg-white/70 dark:bg-slate-700/70 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-ocean-50 hover:text-ocean-600 dark:hover:bg-ocean-700/30 dark:hover:text-ocean-400"
           }`}
         >
-          Ẩn đã xong
+          {FILTER.HIDE_CHECKED}
         </button>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ArchivedTrip } from "@/lib/types";
+import { HISTORY, COMMON } from "@/lib/constants";
 
 interface Props {
   trips: ArchivedTrip[];
@@ -37,12 +38,12 @@ export default function TripHistoryModal({
     >
       <div className="w-full max-w-lg bg-white/80 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/30 dark:border-slate-600/50 p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold font-playfair text-gray-900 dark:text-gray-100 mb-4">
-          Lịch sử chuyến đi
+          {HISTORY.TITLE}
         </h2>
 
         {trips.length === 0 ? (
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-            Chưa có chuyến đi nào được lưu.
+            {HISTORY.EMPTY}
           </p>
         ) : (
           <div className="space-y-3">
@@ -139,7 +140,7 @@ export default function TripHistoryModal({
                           onClick={() => onDeleteTrip(trip.id)}
                           className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
                         >
-                          Xoá chuyến đi này
+                          {HISTORY.DELETE_TRIP}
                         </button>
                       </div>
                     </div>
@@ -156,7 +157,7 @@ export default function TripHistoryModal({
             onClick={onClose}
             className="text-sm px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
           >
-            Đóng
+            {COMMON.CLOSE}
           </button>
         </div>
       </div>

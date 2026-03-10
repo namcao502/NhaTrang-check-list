@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { parseImportText } from "@/lib/parseImportText";
 import type { Category } from "@/lib/types";
+import { IMPORT, COMMON } from "@/lib/constants";
 
 const NEW_CATEGORY_VALUE = "__new__";
 
@@ -51,25 +52,25 @@ export default function ImportTextModal({
     >
       <div className="w-full max-w-lg bg-white/80 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/30 dark:border-slate-600/50 p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold font-playfair text-gray-900 dark:text-gray-100 mb-4">
-          Nhap danh sach
+          {IMPORT.TITLE}
         </h2>
 
         {/* Textarea */}
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Dan danh sach vao day
+          {IMPORT.INSTRUCTIONS}
         </label>
         <textarea
           autoFocus
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={6}
-          placeholder={"- Kem chong nang\n- Khan tam\n- Kinh boi\n..."}
+          placeholder={IMPORT.PLACEHOLDER}
           className="w-full text-sm border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ocean-400 dark:focus:ring-ocean-500 resize-y font-dm-sans"
         />
 
         {/* Category selector */}
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-4 mb-1">
-          Nhap vao danh muc
+          {IMPORT.TO_CATEGORY}
         </label>
         <select
           value={selectedCategoryId}
@@ -81,7 +82,7 @@ export default function ImportTextModal({
               {cat.icon ? `${cat.icon} ` : ""}{cat.name}
             </option>
           ))}
-          <option value={NEW_CATEGORY_VALUE}>+ Tao moi...</option>
+          <option value={NEW_CATEGORY_VALUE}>{IMPORT.CREATE_NEW}</option>
         </select>
 
         {/* New category name input */}
@@ -90,7 +91,7 @@ export default function ImportTextModal({
             type="text"
             value={newCategoryName}
             onChange={(e) => setNewCategoryName(e.target.value)}
-            placeholder="Ten danh muc moi..."
+            placeholder={IMPORT.NEW_CATEGORY_PLACEHOLDER}
             className="w-full mt-2 text-sm border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ocean-400 dark:focus:ring-ocean-500 font-dm-sans"
           />
         )}
@@ -99,7 +100,7 @@ export default function ImportTextModal({
         {parsedItems.length > 0 && (
           <div className="mt-4">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Xem truoc ({parsedItems.length} mon)
+              {IMPORT.PREVIEW(parsedItems.length)}
             </p>
             <ul className="max-h-40 overflow-y-auto space-y-1 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
               {parsedItems.map((item, idx) => (
@@ -119,7 +120,7 @@ export default function ImportTextModal({
             onClick={onClose}
             className="text-sm px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
           >
-            Huy
+            {COMMON.CANCEL}
           </button>
           <button
             type="button"
@@ -127,7 +128,7 @@ export default function ImportTextModal({
             disabled={!canConfirm}
             className="text-sm px-5 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Nhap
+            {IMPORT.SUBMIT}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import type { Template, Category } from "@/lib/types";
+import { TEMPLATE } from "@/lib/constants";
 
 interface Props {
   templates: Template[];
@@ -29,7 +30,7 @@ export default function TemplatePicker({ templates, onSave, onLoad, onDelete }: 
 
   function handleLoad(id: string) {
     const confirmed = window.confirm(
-      "Tải mẫu này sẽ thay thế danh sách hiện tại. Bạn có chắc không?"
+      TEMPLATE.LOAD_CONFIRM
     );
     if (!confirmed) return;
     onLoad(id);
@@ -74,7 +75,7 @@ export default function TemplatePicker({ templates, onSave, onLoad, onDelete }: 
         onClick={() => setOpen((v) => !v)}
         className="w-full glass-card rounded-2xl shadow-lg border border-white/40 dark:border-white/10 px-5 py-3 text-left text-sm font-medium text-ocean-700 dark:text-ocean-300 hover:border-ocean-300 dark:hover:border-ocean-500 transition-colors flex items-center justify-between"
       >
-        <span>Mẫu chuyến đi</span>
+        <span>{TEMPLATE.TITLE}</span>
         <svg
           className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
@@ -102,7 +103,7 @@ export default function TemplatePicker({ templates, onSave, onLoad, onDelete }: 
                     {t.name}
                   </span>
                   <span className="block text-xs text-gray-400 dark:text-gray-500">
-                    {countItems(t.categories)} vật phẩm
+                    {TEMPLATE.ITEM_COUNT(countItems(t.categories))}
                     {t.id !== "default" && ` · ${formatDate(t.createdAt)}`}
                   </span>
                 </button>
@@ -111,7 +112,7 @@ export default function TemplatePicker({ templates, onSave, onLoad, onDelete }: 
                     type="button"
                     onClick={() => onDelete(t.id)}
                     className="shrink-0 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition-colors"
-                    title="Xoá mẫu"
+                    title={TEMPLATE.DELETE_ARIA}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -134,7 +135,7 @@ export default function TemplatePicker({ templates, onSave, onLoad, onDelete }: 
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={handleSaveKeyDown}
-              placeholder="Tên mẫu mới..."
+              placeholder={TEMPLATE.NEW_PLACEHOLDER}
               className="flex-1 min-w-0 rounded-xl border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ocean-300 dark:focus:ring-ocean-500 transition"
             />
             <button
@@ -143,7 +144,7 @@ export default function TemplatePicker({ templates, onSave, onLoad, onDelete }: 
               disabled={!newName.trim()}
               className="shrink-0 rounded-xl bg-coral-500 hover:bg-coral-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 transition-colors"
             >
-              Lưu mẫu mới
+              {TEMPLATE.SAVE_NEW}
             </button>
           </div>
         </div>

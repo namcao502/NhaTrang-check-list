@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCountdown } from "@/lib/useCountdown";
 import { useNotifications } from "@/lib/useNotifications";
+import { COUNTDOWN, COMMON } from "@/lib/constants";
 
 export default function CountdownBanner() {
   const { departureDate, timeLeft, isPast, setDeparture, clearDeparture } = useCountdown();
@@ -54,19 +55,19 @@ export default function CountdownBanner() {
             onClick={handleConfirm}
             className="rounded-full bg-ocean-600 text-white text-sm font-medium px-3 py-1.5 hover:bg-ocean-700 transition"
           >
-            Xác nhận
+            {COMMON.CONFIRM}
           </button>
           <button
             type="button"
             onClick={handleCancel}
             className="rounded-full border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-gray-500 dark:text-gray-400 text-sm px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-slate-600 transition"
           >
-            Huỷ
+            {COMMON.CANCEL}
           </button>
         </div>
         {isPastInput && (
           <span className="text-xs text-red-500 dark:text-red-400 font-medium">
-            ⚠️ Ngày đã qua
+            {COUNTDOWN.PAST_WARNING}
           </span>
         )}
       </div>
@@ -82,7 +83,7 @@ export default function CountdownBanner() {
           onClick={handleOpen}
           className="rounded-full bg-ocean-100 text-ocean-700 dark:bg-ocean-700/40 dark:text-ocean-300 text-sm font-medium px-4 py-1.5 hover:bg-ocean-200 dark:hover:bg-ocean-700/60 transition"
         >
-          Đặt ngày đi
+          {COUNTDOWN.SET_DATE}
         </button>
       </div>
     );
@@ -90,11 +91,11 @@ export default function CountdownBanner() {
 
   let message: string;
   if (isPast) {
-    message = "Chuyến đi đã qua rồi!";
+    message = COUNTDOWN.TRIP_PASSED;
   } else if (timeLeft && timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-    message = "🎉 Hôm nay là ngày đi!";
+    message = COUNTDOWN.TRIP_TODAY;
   } else if (timeLeft) {
-    message = `✈️ Còn ${timeLeft.days} ngày · ${timeLeft.hours} giờ · ${timeLeft.minutes} phút · ${timeLeft.seconds} giây`;
+    message = COUNTDOWN.FORMAT(timeLeft.days, timeLeft.hours, timeLeft.minutes, timeLeft.seconds);
   } else {
     // Fallback while loading (departureDate set but timeLeft not yet computed)
     message = "...";
@@ -110,14 +111,14 @@ export default function CountdownBanner() {
         onClick={handleOpen}
         className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-sm text-ocean-600 dark:text-ocean-400 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
       >
-        Thay đổi
+        {COMMON.CHANGE}
       </button>
       <button
         type="button"
         onClick={handleClear}
         className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-sm text-gray-500 dark:text-gray-400 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
       >
-        Xoá
+        {COMMON.DELETE}
       </button>
       <button
         type="button"
@@ -129,7 +130,7 @@ export default function CountdownBanner() {
             : 'border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-slate-700/70 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10'
         } disabled:opacity-50 disabled:cursor-not-allowed`}
       >
-        {notifEnabled ? 'Nhắc nhở: Bật' : 'Nhắc nhở'}
+        {notifEnabled ? COUNTDOWN.NOTIF_ENABLED : COUNTDOWN.NOTIF_TOGGLE}
       </button>
     </div>
   );

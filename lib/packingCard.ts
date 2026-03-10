@@ -1,6 +1,8 @@
 // Canvas-based packing progress card generator (1200x630)
 // Uses hardcoded hex colors matching tailwind.config.ts tokens
 
+import { PACKING_CARD } from "@/lib/constants";
+
 export interface PackingCardOptions {
   checkedItems: number;
   totalItems: number;
@@ -81,9 +83,9 @@ function getCountdownText(departureDate: string): string | null {
 
   const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
   if (days === 0) {
-    return "Hom nay la ngay di!";
+    return PACKING_CARD.CARD_TODAY;
   }
-  return `Con ${days} ngay nua!`;
+  return PACKING_CARD.CARD_COUNTDOWN(days);
 }
 
 /**
@@ -113,12 +115,12 @@ export function renderPackingCard(
   ctx.fillStyle = COLORS.white;
   ctx.font = "bold 52px Playfair Display, serif";
   ctx.textAlign = "left";
-  ctx.fillText("Nha Trang Packing List", 80, 120);
+  ctx.fillText(PACKING_CARD.CARD_TITLE, 80, 120);
 
   // --- Subtitle ---
   ctx.fillStyle = COLORS.lightText;
   ctx.font = "24px DM Sans, sans-serif";
-  ctx.fillText("Bien · Vinwonders · Safari", 80, 165);
+  ctx.fillText(PACKING_CARD.CARD_SUBTITLE, 80, 165);
 
   // --- Progress percentage (large) ---
   ctx.fillStyle = COLORS.white;
@@ -128,7 +130,7 @@ export function renderPackingCard(
   // --- Stats text ---
   ctx.fillStyle = COLORS.sand200;
   ctx.font = "28px DM Sans, sans-serif";
-  ctx.fillText(`Da chuan bi ${checkedItems}/${totalItems} do vat`, 80, 380);
+  ctx.fillText(PACKING_CARD.CARD_STATS(checkedItems, totalItems), 80, 380);
 
   // --- Progress bar background ---
   const barX = 80;
@@ -162,11 +164,6 @@ export function renderPackingCard(
     ctx.fillText(countdownText, 80, 500);
   }
 
-  // --- Footer branding ---
-  ctx.fillStyle = COLORS.lightText;
-  ctx.font = "20px DM Sans, sans-serif";
-  ctx.textAlign = "right";
-  ctx.fillText("beach-check-list", width - 80, height - 40);
   ctx.textAlign = "left";
 
   // --- All done badge ---
@@ -175,7 +172,7 @@ export function renderPackingCard(
     ctx.fillStyle = COLORS.sand300;
     ctx.font = "bold 36px DM Sans, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("San sang ra bien!", width - 80, 330);
+    ctx.fillText(PACKING_CARD.CARD_READY, width - 80, 330);
     ctx.restore();
   }
 }

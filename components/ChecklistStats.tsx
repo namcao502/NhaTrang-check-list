@@ -1,5 +1,7 @@
 "use client";
 
+import { STATS } from "@/lib/constants";
+
 interface Props {
   checked: number;
   total: number;
@@ -15,20 +17,20 @@ export default function ChecklistStats({ checked, total, onResetRequest, onShowH
     <div className="glass-card rounded-2xl shadow-lg border border-white/40 dark:border-white/10 px-5 py-5">
       <div className="flex items-center justify-between mb-3">
         <span className="text-base font-medium text-gray-600 dark:text-gray-300">
-          {allDone ? "🏖️ Sẵn sàng ra biển rồi!" : `Đã chuẩn bị ${checked}/${total} đồ vật`}
+          {allDone ? STATS.READY : STATS.PREP_FORMAT(checked, total)}
         </span>
         <div className="print-hide flex items-center gap-2">
           <button
             onClick={onShowHistory}
             className="text-sm px-2 py-1 text-gray-400 hover:text-ocean-600 dark:text-gray-400 dark:hover:text-ocean-400 transition-colors"
           >
-            Lịch sử
+            {STATS.HISTORY}
           </button>
           <button
             onClick={onResetRequest}
             className="text-sm px-2 py-1 text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
           >
-            Đặt lại
+            {STATS.RESET}
           </button>
         </div>
       </div>

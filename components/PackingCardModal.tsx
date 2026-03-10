@@ -6,6 +6,7 @@ import {
   downloadCanvasAsPng,
   copyCanvasToClipboard,
 } from "@/lib/packingCard";
+import { PACKING_CARD } from "@/lib/constants";
 
 interface Props {
   open: boolean;
@@ -101,11 +102,11 @@ export default function PackingCardModal({
   function getCopyButtonText(): string {
     switch (feedback) {
       case "copied":
-        return "Da sao chep!";
+        return PACKING_CARD.COPY_SUCCESS;
       case "error":
-        return "Khong the sao chep";
+        return PACKING_CARD.COPY_ERROR;
       default:
-        return "Sao chep";
+        return PACKING_CARD.COPY_BUTTON;
     }
   }
 
@@ -119,7 +120,7 @@ export default function PackingCardModal({
       <div className="w-full max-w-2xl bg-white/80 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/30 dark:border-slate-600/50 p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold font-playfair text-gray-900 dark:text-gray-100">
-            Chia se tien do
+            {PACKING_CARD.TITLE}
           </h2>
           <button
             type="button"
@@ -147,7 +148,7 @@ export default function PackingCardModal({
             onClick={handleDownload}
             className="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors bg-ocean-600 text-white hover:bg-ocean-700 dark:bg-ocean-600 dark:hover:bg-ocean-700"
           >
-            Tai xuong PNG
+            {PACKING_CARD.DOWNLOAD}
           </button>
           <button
             type="button"
