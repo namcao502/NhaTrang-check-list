@@ -9,7 +9,10 @@ import ChecklistItem from "./ChecklistItem";
 import SortableItem from "./SortableItem";
 import AddItemForm from "./AddItemForm";
 import EmojiPicker from "./EmojiPicker";
+import DragHandle from "./DragHandle";
+import { useCategoryDrag } from "./SortableCategory";
 import { isValidCollapseState } from "@/lib/validation";
+import { CATEGORY } from "@/lib/constants";
 
 const COLLAPSE_STORAGE_KEY = "beach-collapse-state";
 
@@ -89,7 +92,7 @@ export default function CategorySection({
 
   function handleDeleteCategory() {
     const confirmed = window.confirm(
-      `Bạn có chắc muốn xoá danh mục "${category.name}" và tất cả đồ vật bên trong?`
+      CATEGORY.DELETE_CONFIRM(category.name)
     );
     if (confirmed) onRemoveCategory();
   }
@@ -129,15 +132,20 @@ export default function CategorySection({
     onReorderItems(fromIndex, toIndex);
   }, [category.items, onReorderItems]);
 
+  const categoryDrag = useCategoryDrag();
+
   return (
     <section className="glass-card rounded-2xl shadow-lg border border-white/40 dark:border-white/10 overflow-hidden">
       {/* Header — collapse is triggered only by the right-side chevron area */}
       <div className="w-full flex items-center justify-between px-5 py-5 hover:bg-white/40 dark:hover:bg-white/5 transition-colors">
-        {/* Left side: icon + name — stopPropagation so clicks here never collapse */}
+        {/* Left side: drag handle + icon + name — stopPropagation so clicks here never collapse */}
         <div
           className="flex items-center gap-3 min-w-0"
           onClick={(e) => e.stopPropagation()}
         >
+          {categoryDrag && (
+            <DragHandle listeners={categoryDrag.listeners} attributes={categoryDrag.attributes} />
+          )}
           <div className="relative print-hide" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
@@ -186,7 +194,7 @@ export default function CategorySection({
 
           {allDone && (
             <span className="text-green-500 text-sm font-medium flex-shrink-0">
-              ✓ Hoàn thành
+              {CATEGORY.COMPLETE_BADGE}
             </span>
           )}
         </div>
@@ -204,13 +212,13 @@ export default function CategorySection({
             }}
             className="print-hide text-sm sm:text-xs px-2 py-1 text-ocean-600 hover:text-ocean-700 dark:text-ocean-400 dark:hover:text-ocean-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {allDone ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+            {allDone ? CATEGORY.DESELECT_ALL : CATEGORY.SELECT_ALL}
           </button>
           <span className="bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-200 rounded-full px-2 py-0.5 text-xs">
             {checked}/{total}
           </span>
           <button
-            aria-label={`Xoá danh mục ${category.name}`}
+            aria-label={CATEGORY.DELETE_ARIA(category.name)}
             onClick={(e) => { e.stopPropagation(); handleDeleteCategory(); }}
             className="print-hide w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-base text-gray-300 hover:text-red-500 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors"
           >
@@ -225,7 +233,7 @@ export default function CategorySection({
       {!collapsed && (
         <div className="px-3 sm:px-4 pb-5">
           {visibleItems.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-400 px-3 py-2">Chưa có đồ vật nào.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-400 px-3 py-2">{CATEGORY.EMPTY}</p>
           ) : (
             <DndContext
               id={`items-${category.id}`}

@@ -2,6 +2,7 @@
 
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type { DraggableAttributes } from "@dnd-kit/core";
+import { ITEM } from "@/lib/constants";
 
 interface Props {
   listeners: SyntheticListenerMap | undefined;
@@ -13,7 +14,7 @@ export default function DragHandle({ listeners, attributes }: Props) {
     <button
       type="button"
       className="print-hide flex-shrink-0 cursor-grab active:cursor-grabbing touch-none p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/10 transition-colors"
-      aria-label="Keo de sap xep"
+      aria-label={ITEM.DRAG_ARIA}
       {...attributes}
       {...listeners}
     >

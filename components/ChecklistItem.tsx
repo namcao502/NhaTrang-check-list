@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
+import DragHandle from "./DragHandle";
+import { useItemDrag } from "./SortableItem";
+import { ITEM, COMMON } from "@/lib/constants";
 
 interface Props {
   id: string;
@@ -73,19 +76,35 @@ export default function ChecklistItem({
     setEditingNote(false);
   }
 
+  const itemDrag = useItemDrag();
+
   return (
     <li
-      className={`flex items-start gap-3 py-3 px-3 rounded-lg group transition-colors ${
+      className={`flex items-center gap-2 py-3 px-3 rounded-lg group transition-colors ${
         checked ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-ocean-50 dark:hover:bg-ocean-900/20"
       }`}
     >
-      <input
+      {itemDrag && (
+        <DragHandle listeners={itemDrag.listeners} attributes={itemDrag.attributes} />
+      )}
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
         id={id}
-        type="checkbox"
-        checked={checked}
-        onChange={onToggle}
-        className="w-6 h-6 rounded accent-ocean-600 cursor-pointer flex-shrink-0 mt-0.5"
-      />
+        onClick={onToggle}
+        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors ${
+          checked
+            ? "bg-ocean-600 border-ocean-600 text-white dark:bg-ocean-500 dark:border-ocean-500"
+            : "border-gray-300 dark:border-gray-500 hover:border-ocean-400 dark:hover:border-ocean-400"
+        }`}
+      >
+        {checked && (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 7L6 10L11 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </button>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
@@ -130,7 +149,7 @@ export default function ChecklistItem({
         {editingNote ? (
           <input
             autoFocus
-            placeholder="Ghi chú..."
+            placeholder={ITEM.NOTE_PLACEHOLDER}
             className="mt-0.5 w-full text-xs border border-ocean-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-ocean-400 dark:focus:ring-ocean-500 dark:bg-slate-700 dark:text-gray-100 dark:border-ocean-600"
             value={noteDraft}
             onChange={(e) => setNoteDraft(e.target.value)}
@@ -156,7 +175,7 @@ export default function ChecklistItem({
           </span>
         ) : (
           <button
-            aria-label="Thêm ghi chú"
+            aria-label={ITEM.ADD_NOTE_ARIA}
             onClick={() => {
               setNoteDraft("");
               setEditingNote(true);
@@ -171,7 +190,7 @@ export default function ChecklistItem({
       {onQuantityChange && (
         <div className="print-hide flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
-            aria-label="Giảm số lượng"
+            aria-label={ITEM.DECREASE_QTY_ARIA}
             disabled={(quantity ?? 1) <= 1}
             onClick={() => onQuantityChange((quantity ?? 1) - 1)}
             className="w-7 h-7 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-ocean-600 hover:text-ocean-700 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:text-ocean-300 dark:hover:bg-ocean-900/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -182,7 +201,7 @@ export default function ChecklistItem({
             {quantity ?? 1}
           </span>
           <button
-            aria-label="Tăng số lượng"
+            aria-label={ITEM.INCREASE_QTY_ARIA}
             onClick={() => onQuantityChange((quantity ?? 1) + 1)}
             className="w-7 h-7 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-ocean-600 hover:text-ocean-700 hover:bg-ocean-50 dark:text-ocean-400 dark:hover:text-ocean-300 dark:hover:bg-ocean-900/20 transition-colors"
           >
@@ -193,18 +212,18 @@ export default function ChecklistItem({
 
       {tag === "must" && (
         <span className="text-xs px-2 py-0.5 rounded-full bg-coral-100 text-coral-600 dark:bg-coral-600/30 dark:text-coral-400 font-medium whitespace-nowrap flex-shrink-0">
-          Quan trọng
+          {COMMON.MUST_TAG}
         </span>
       )}
       {tag === "opt" && (
         <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium whitespace-nowrap flex-shrink-0">
-          Nên có
+          {COMMON.OPT_TAG}
         </span>
       )}
 
       <button
         onClick={onRemove}
-        aria-label={`Xoá ${label}`}
+        aria-label={ITEM.DELETE_ARIA(label)}
         className="print-hide opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 text-xl p-1 leading-none flex-shrink-0"
       >
         ×

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Suggestion } from "@/lib/suggestionsData";
+import { SMART_SUGGEST, COMMON } from "@/lib/constants";
 
 interface Props {
   suggestions: Suggestion[];
@@ -29,10 +30,10 @@ export default function SmartSuggestions({ suggestions, onAdd, onDismiss }: Prop
           ▶
         </span>
         <h2 className="text-base font-semibold font-playfair text-gray-800 dark:text-gray-100">
-          Goi y thong minh
+          {SMART_SUGGEST.TITLE}
         </h2>
         <span className="ml-auto text-xs text-gray-400 dark:text-gray-500 font-dm-sans">
-          {suggestions.length} goi y
+          {SMART_SUGGEST.COUNT(suggestions.length)}
         </span>
       </button>
 
@@ -53,7 +54,7 @@ export default function SmartSuggestions({ suggestions, onAdd, onDismiss }: Prop
                   </span>
                   {s.tag === "must" && (
                     <span className="text-xs text-coral-600 dark:text-coral-400 bg-coral-50 dark:bg-coral-600/20 rounded-full px-2 py-0.5">
-                      quan trong
+                      {COMMON.MUST_TAG.toLowerCase()}
                     </span>
                   )}
                 </div>
@@ -68,13 +69,13 @@ export default function SmartSuggestions({ suggestions, onAdd, onDismiss }: Prop
                 onClick={() => onAdd(s)}
                 className="rounded-lg bg-ocean-600 text-white text-xs font-medium px-3 py-1.5 hover:bg-ocean-700 transition-colors flex-shrink-0"
               >
-                Them
+                {COMMON.ADD}
               </button>
               <button
                 type="button"
                 onClick={() => onDismiss(s.id)}
                 className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-sm flex-shrink-0 px-1"
-                aria-label="Bo qua goi y"
+                aria-label={SMART_SUGGEST.DISMISS_ARIA}
               >
                 ✕
               </button>
