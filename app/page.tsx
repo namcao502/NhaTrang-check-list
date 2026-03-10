@@ -18,6 +18,9 @@ import TemplatePicker from "@/components/TemplatePicker";
 import ArchiveConfirmModal from "@/components/ArchiveConfirmModal";
 import TripHistoryModal from "@/components/TripHistoryModal";
 import { useTripHistory } from "@/lib/useTripHistory";
+import { useSuggestions } from "@/lib/useSuggestions";
+import SmartSuggestions from "@/components/SmartSuggestions";
+import type { Suggestion } from "@/lib/suggestionsData";
 
 export default function Home() {
   const {
@@ -53,6 +56,39 @@ export default function Home() {
   } = useTemplates();
 
   const { trips, archiveTrip, deleteTrip } = useTripHistory();
+
+  const [departureDate, setDepartureDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("beach-departure");
+      if (stored) setDepartureDate(stored);
+    } catch {
+      // Ignore read errors
+    }
+
+    // Listen for changes from CountdownBanner
+    function handleStorage(e: StorageEvent) {
+      if (e.key === "beach-departure") {
+        setDepartureDate(e.newValue);
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const { suggestions, dismiss: dismissSuggestion } = useSuggestions(categories, departureDate);
+
+  const handleAddSuggestion = useCallback((suggestion: Suggestion) => {
+    // Find matching category by name (case-insensitive)
+    const targetCat = categories.find(
+      (c) => c.name.toLowerCase() === suggestion.targetCategoryName.toLowerCase()
+    );
+    const categoryId = targetCat?.id ?? categories[0]?.id;
+    if (!categoryId) return;
+    addItem(categoryId, suggestion.label, suggestion.tag, suggestion.note);
+    dismissSuggestion(suggestion.id);
+  }, [categories, addItem, dismissSuggestion]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [mustOnly, setMustOnly] = useState(false);
@@ -257,6 +293,11 @@ export default function Home() {
 
           <div className="print-hide flex flex-col gap-3">
             <AddCategoryForm onAdd={addCategory} />
+            <SmartSuggestions
+              suggestions={suggestions}
+              onAdd={handleAddSuggestion}
+              onDismiss={dismissSuggestion}
+            />
             <button
               onClick={() => setShowImportModal(true)}
               className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-2xl text-base text-gray-400 dark:text-gray-400 hover:border-ocean-400 hover:text-ocean-600 dark:hover:border-ocean-500 dark:hover:text-ocean-400 transition-colors"

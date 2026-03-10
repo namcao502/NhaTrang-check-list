@@ -83,6 +83,10 @@ export function isValidTripHistory(data: unknown): data is ArchivedTrip[] {
   return data.every(isValidArchivedTrip);
 }
 
+export function isValidDismissedSuggestions(data: unknown): data is string[] {
+  return Array.isArray(data) && data.every((v) => typeof v === 'string');
+}
+
 export function isValidDateString(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(value + 'T00:00:00');
