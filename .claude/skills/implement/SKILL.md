@@ -265,7 +265,7 @@ Output a self-review report:
 - <list from git diff>
 
 ### Acceptance Criteria
-- [x] <criterion> — implemented in <file>
+- [x] <criterion> — implemented in <file>/eva
 - [ ] <criterion> — NOT implemented (<reason>)
 
 ### Verdict

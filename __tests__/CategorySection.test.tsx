@@ -450,7 +450,7 @@ describe("CategorySection — visibleItems", () => {
 describe("CategorySection — drag handle", () => {
   it("renders a drag handle for item reordering", () => {
     render(<CategorySection {...makeProps()} />);
-    const handles = screen.getAllByRole("button", { name: /keo de sap xep/i });
+    const handles = screen.getAllByRole("button", { name: /kéo để sắp xếp/i });
     expect(handles.length).toBeGreaterThan(0);
   });
 });

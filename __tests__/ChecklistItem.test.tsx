@@ -148,14 +148,14 @@ describe("ChecklistItem — tag badge DOM structure", () => {
     expect(badge.parentElement).toBe(li);
   });
 
-  it("the <li> row has flex and items-start classes", () => {
+  it("the <li> row has flex and items-center classes", () => {
     const { container } = render(
       <ChecklistItem {...makeProps({ tag: "must" })} />
     );
     const li = container.querySelector("li")!;
 
     expect(li).toHaveClass("flex");
-    expect(li).toHaveClass("items-start");
+    expect(li).toHaveClass("items-center");
   });
 
   it("badge is a sibling of the flex-1 content div at the <li> level", () => {

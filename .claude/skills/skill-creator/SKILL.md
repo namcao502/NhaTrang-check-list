@@ -29,6 +29,23 @@ Then after the skill is done (but again, the order is flexible), you can also ru
 
 Cool? Cool.
 
+## Script Dependencies
+
+This skill references Python scripts and HTML assets that ship with the skill-creator package. When invoked from a project directory, resolve paths relative to this skill's own directory:
+
+```
+SKILL_DIR = <directory containing this SKILL.md>
+```
+
+| Reference in instructions | Actual path |
+|---------------------------|-------------|
+| `scripts.aggregate_benchmark` | `python -m scripts.aggregate_benchmark` run from `$SKILL_DIR` |
+| `scripts.run_loop` | `python -m scripts.run_loop` run from `$SKILL_DIR` |
+| `eval-viewer/generate_review.py` | `$SKILL_DIR/eval-viewer/generate_review.py` |
+| `assets/eval_review.html` | `$SKILL_DIR/assets/eval_review.html` |
+
+If scripts are missing from the skill directory, check `~/.claude/plugins/cache/everything-claude-code/` for the original ECC distribution and copy them locally.
+
 ## Communicating with the user
 
 The skill creator is liable to be used by people across a wide range of familiarity with coding jargon. If you haven't heard (and how could you, it's only very recently that it started), there's a trend now where the power of Claude is inspiring plumbers to open up their terminals, parents and grandparents to google "how to install npm". On the other hand, the bulk of users are probably fairly computer-literate.

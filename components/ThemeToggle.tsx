@@ -73,15 +73,15 @@ export default function ThemeToggle() {
   }, [mode]);
 
   const labelMap: Record<ThemeMode, string> = {
-    light: "\uD83C\uDF19 T\u1ED1i",
-    dark: "\uD83D\uDDA5\uFE0F H\u1EC7 th\u1ED1ng",
-    system: "\u2600\uFE0F S\u00E1ng",
+    light: "☀️ Sáng",
+    dark: "🌙 Tối",
+    system: "🖥️ Hệ thống",
   };
 
   const ariaMap: Record<ThemeMode, string> = {
-    light: "Chuy\u1EC3n sang ch\u1EBF \u0111\u1ED9 t\u1ED1i",
-    dark: "Chuy\u1EC3n sang ch\u1EBF \u0111\u1ED9 h\u1EC7 th\u1ED1ng",
-    system: "Chuy\u1EC3n sang ch\u1EBF \u0111\u1ED9 s\u00E1ng",
+    light: "Chuyển sang chế độ tối",
+    dark: "Chuyển sang chế độ hệ thống",
+    system: "Chuyển sang chế độ sáng",
   };
 
   return (

@@ -25,7 +25,10 @@
       "Bash(npm install:*)",
       "Bash(node:*)",
       "Bash(npx jest:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(chmod +x:*)",
+      "Bash(bash:*)",
+      "Bash(rm -rf \"C:/TEST/beach-check-list/.claude/wip\" && cd C:/TEST/beach-check-list && npm run build 2>&1 | tail -20)"
     ]
   }
 }

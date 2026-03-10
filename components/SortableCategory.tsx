@@ -2,7 +2,20 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import DragHandle from "./DragHandle";
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import type { DraggableAttributes } from "@dnd-kit/core";
+import { createContext, useContext } from "react";
+
+interface DragContextValue {
+  listeners: SyntheticListenerMap | undefined;
+  attributes: DraggableAttributes;
+}
+
+const CategoryDragContext = createContext<DragContextValue | null>(null);
+
+export function useCategoryDrag(): DragContextValue | null {
+  return useContext(CategoryDragContext);
+}
 
 interface Props {
   id: string;
@@ -26,11 +39,10 @@ export default function SortableCategory({ id, children }: Props) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-start gap-2">
-      <div className="mt-5">
-        <DragHandle listeners={listeners} attributes={attributes} />
+    <CategoryDragContext.Provider value={{ listeners, attributes }}>
+      <div ref={setNodeRef} style={style}>
+        {children}
       </div>
-      <div className="flex-1 min-w-0">{children}</div>
-    </div>
+    </CategoryDragContext.Provider>
   );
 }

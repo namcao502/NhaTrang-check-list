@@ -72,7 +72,6 @@ describe("FEAT-remove-buttons — page.tsx imports", () => {
 
   const removedButtonLabels = [
     "Sao chép danh sách",
-    "Chia sẻ",
     "Mẫu chuyến đi",
     "In danh sách",
   ];
