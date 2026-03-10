@@ -252,6 +252,39 @@ export function useChecklist() {
     );
   }
 
+  function importItems(labels: string[], categoryId: string | null, newCategoryName?: string) {
+    if (labels.length === 0) return;
+    pushUndo();
+    setCategories((prev) => {
+      let cats = prev;
+      let targetId = categoryId;
+
+      if (!targetId && newCategoryName?.trim()) {
+        const newCat: Category = {
+          id: crypto.randomUUID(),
+          name: newCategoryName.trim(),
+          items: [],
+        };
+        cats = [...cats, newCat];
+        targetId = newCat.id;
+      }
+
+      if (!targetId) return cats;
+
+      const newItems: Item[] = labels.map((label) => ({
+        id: crypto.randomUUID(),
+        label,
+        checked: false,
+      }));
+
+      return cats.map((cat) =>
+        cat.id !== targetId
+          ? cat
+          : { ...cat, items: [...cat.items, ...newItems] }
+      );
+    });
+  }
+
   function undo() {
     setUndoStack((prev) => {
       if (prev.length === 0) return prev;
@@ -290,6 +323,7 @@ export function useChecklist() {
     moveCategory,
     updateQuantity,
     moveItem,
+    importItems,
     undo,
     canUndo,
   };

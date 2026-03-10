@@ -11,6 +11,7 @@ import UndoButton from "@/components/UndoButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import AmbientFireworks from "@/components/AmbientFireworks";
 import ExportButtons from "@/components/ExportButtons";
+import ImportTextModal from "@/components/ImportTextModal";
 
 export default function Home() {
   const {
@@ -32,6 +33,7 @@ export default function Home() {
     updateCategoryIcon,
     moveCategory,
     moveItem,
+    importItems,
     undo,
     canUndo,
   } = useChecklist();
@@ -39,6 +41,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mustOnly, setMustOnly] = useState(false);
   const [hideChecked, setHideChecked] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -211,11 +214,25 @@ export default function Home() {
             );
           })}
 
-          <div className="print-hide">
+          <div className="print-hide flex flex-col gap-3">
             <AddCategoryForm onAdd={addCategory} />
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="w-full py-4 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-2xl text-base text-gray-400 dark:text-gray-400 hover:border-ocean-400 hover:text-ocean-600 dark:hover:border-ocean-500 dark:hover:text-ocean-400 transition-colors"
+            >
+              Nhap danh sach
+            </button>
           </div>
         </div>
       </main>
+
+      {showImportModal && (
+        <ImportTextModal
+          categories={categories}
+          onImport={importItems}
+          onClose={() => setShowImportModal(false)}
+        />
+      )}
 
       <UndoButton canUndo={canUndo} onUndo={undo} />
     </>
