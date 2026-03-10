@@ -59,7 +59,16 @@ export async function fetchWeather(
   url.searchParams.set('timezone', 'auto');
   url.searchParams.set('forecast_days', '7');
 
-  const response = await fetch(url.toString());
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  let response: Response;
+  try {
+    response = await fetch(url.toString(), { signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
   if (!response.ok) {
     throw new Error(`Weather API error: ${response.status}`);
   }
@@ -135,7 +144,15 @@ export async function geocodeCity(name: string): Promise<{ name: string; lat: nu
   url.searchParams.set('count', '1');
   url.searchParams.set('language', 'vi');
 
-  const response = await fetch(url.toString());
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  let response: Response;
+  try {
+    response = await fetch(url.toString(), { signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
   if (!response.ok) return null;
 
   const json = await response.json();

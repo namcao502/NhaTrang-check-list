@@ -38,10 +38,14 @@ export default function WeatherWidget({ departureDate }: Props) {
         </span>
       </div>
 
-      {/* Loading state */}
+      {/* Loading state — compact skeleton */}
       {loading && (
-        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-400 animate-pulse">
-          <span>Dang tai du bao...</span>
+        <div className="flex items-center gap-3 animate-pulse">
+          <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-600" />
+          <div className="space-y-1.5 flex-1">
+            <div className="h-3 w-24 rounded bg-gray-200 dark:bg-gray-600" />
+            <div className="h-2.5 w-16 rounded bg-gray-200 dark:bg-gray-600" />
+          </div>
         </div>
       )}
 
